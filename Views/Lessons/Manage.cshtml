@@ -1,0 +1,54 @@
+﻿@model SIGECES.Models.Course
+
+@{
+    ViewData["Title"] = "Lecciones del curso";
+}
+
+<h2>Lecciones de: @Model.Title</h2>
+
+<p>
+    <strong>Categoría:</strong> @Model.Category?.Name <br />
+    <strong>Instructor:</strong> @Model.Instructor?.FullName
+</p>
+
+<p>
+    <a asp-controller="Courses" asp-action="Index" class="btn btn-secondary btn-sm">Volver a cursos</a>
+    <a asp-action="Create" asp-route-courseId="@Model.Id" class="btn btn-primary btn-sm">Agregar lección</a>
+</p>
+
+@if (Model.Lessons != null && Model.Lessons.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Orden</th>
+                <th>Título</th>
+                <th>Recurso</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var lesson in Model.Lessons.OrderBy(l => l.Order))
+            {
+                <tr>
+                    <td>@lesson.Order</td>
+                    <td>@lesson.Title</td>
+                    <td>
+                        @if (!string.IsNullOrWhiteSpace(lesson.ResourceUrl))
+                        {
+                            <a href="@lesson.ResourceUrl" target="_blank">Ver recurso</a>
+                        }
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@lesson.Id" class="btn btn-sm btn-outline-primary">Editar</a>
+                        <a asp-action="Delete" asp-route-id="@lesson.Id" class="btn btn-sm btn-outline-danger">Eliminar</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Este curso aún no tiene lecciones configuradas.</p>
+}

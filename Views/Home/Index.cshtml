@@ -1,8 +1,90 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Inicio";
+    var isAuthenticated = User?.Identity?.IsAuthenticated == true;
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4">SIGECES UTEC</h1>
+    <p class="lead">Sistema de gestión de cursos extracurriculares para estudiantes UTEC.</p>
 </div>
+
+<hr />
+
+@if (!isAuthenticated)
+{
+    <div class="alert alert-info">
+        Para acceder a los cursos, inicia sesión con tu usuario de SIGECES.
+    </div>
+
+    <p>
+        <a asp-controller="Account" asp-action="Login" class="btn btn-primary">
+            Iniciar sesión
+        </a>
+    </p>
+}
+else if (User.IsInRole("Admin"))
+{
+    <h3>Panel de administración</h3>
+    <p>Como administrador puedes gestionar usuarios, categorías y cursos.</p>
+
+    <ul>
+        <li>
+            <a asp-controller="Courses" asp-action="Index">Gestionar cursos</a>
+        </li>
+        <li>
+            (Opcional) En el futuro podrías agregar gestión de usuarios y categorías aquí.
+        </li>
+    </ul>
+}
+else if (User.IsInRole("Instructor"))
+{
+    <h3>Panel de instructor</h3>
+    <p>Como instructor puedes crear y administrar tus cursos y lecciones.</p>
+
+    <ul>
+        <li>
+            <a asp-controller="Courses" asp-action="Index">Ver mis cursos</a>
+        </li>
+        <li>
+            Desde tus cursos puedes administrar las lecciones de cada uno.
+        </li>
+    </ul>
+}
+else if (User.IsInRole("Student"))
+{
+    <h3>Panel de estudiante</h3>
+    <p>Explora el catálogo de cursos extracurriculares y lleva control de tus inscripciones.</p>
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Catálogo de cursos</h5>
+                    <p class="card-text">
+                        Ver todos los cursos disponibles en SIGECES.
+                    </p>
+                    <a asp-controller="StudentCourses" asp-action="Index" class="btn btn-primary">
+                        Ir al catálogo
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Mis cursos</h5>
+                    <p class="card-text">
+                        Revisa tus inscripciones activas y cursos en progreso.
+                    </p>
+                    <a asp-controller="StudentCourses" asp-action="MyCourses" class="btn btn-outline-primary">
+                        Ver mis cursos
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <p>No se pudo determinar tu rol. Contacta al administrador.</p>
+}
