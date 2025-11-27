@@ -28,16 +28,30 @@
                 </button>
 
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
 
-                        @* Links según rol *@
-                        @if (User.IsInRole("Admin") || User.IsInRole("Instructor"))
+                        @* Menú según rol *@
+                        @if (User.IsInRole("Admin"))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Courses" asp-action="Index">Cursos</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="CourseCategories" asp-action="Index">Categorías</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Index">Usuarios</a>
+                            </li>
+                            @* Más adelante podemos agregar: Categorías, reportes, etc. *@
+                        }
+                        else if (User.IsInRole("Instructor"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Courses" asp-action="Index">Mis cursos</a>
                             </li>
                         }
                         else if (User.IsInRole("Student"))
@@ -50,7 +64,7 @@
                             </li>
                         }
 
-                        @* Espacio + usuario / login/logout *@
+                        @* Zona de usuario / login/logout *@
                         @if (isAuthenticated)
                         {
                             <li class="nav-item ms-auto">
@@ -76,6 +90,7 @@
                             </li>
                         }
                     </ul>
+
                 </div>
             </div>
         </nav>

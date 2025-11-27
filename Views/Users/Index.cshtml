@@ -1,0 +1,41 @@
+﻿@model IEnumerable<SIGECES.Models.User>
+
+@{
+    ViewData["Title"] = "Usuarios";
+}
+
+<h2>Usuarios</h2>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Crear nuevo usuario</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Correo</th>
+            <th>Rol</th>
+            <th>Activo</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.FullName</td>
+                <td>@user.Email</td>
+                <td>@user.Role</td>
+                <td>@(user.IsActive ? "Sí" : "No")</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@user.Id" class="btn btn-sm btn-outline-primary">Editar</a>
+                    @if (user.IsActive)
+                    {
+                        <a asp-action="Delete" asp-route-id="@user.Id" class="btn btn-sm btn-outline-danger">Desactivar</a>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

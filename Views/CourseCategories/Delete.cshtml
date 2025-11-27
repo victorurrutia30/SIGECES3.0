@@ -1,0 +1,27 @@
+﻿@model SIGECES.Models.CourseCategory
+
+@{
+    ViewData["Title"] = "Desactivar categoría";
+}
+
+<h2>Desactivar categoría</h2>
+
+<p>¿Seguro que deseas desactivar esta categoría? Los cursos seguirán existiendo, pero la categoría se marcará como inactiva.</p>
+
+<dl class="row">
+    <dt class="col-sm-2">Nombre</dt>
+    <dd class="col-sm-10">@Model.Name</dd>
+
+    <dt class="col-sm-2">Descripción</dt>
+    <dd class="col-sm-10">@Model.Description</dd>
+
+    <dt class="col-sm-2">Cursos asociados</dt>
+    <dd class="col-sm-10">@((Model.Courses?.Count()) ?? 0)</dd>
+</dl>
+
+<form asp-action="Delete" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Desactivar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>
