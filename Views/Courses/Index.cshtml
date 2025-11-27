@@ -30,9 +30,11 @@
                 <td>@(item.IsActive ? "Sí" : "No")</td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id">Editar</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Eliminar</a> |
                     <a asp-controller="Lessons" asp-action="Manage" asp-route-courseId="@item.Id">Lecciones</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
+                    <a asp-action="Students" asp-route-id="@item.Id">Estudiantes</a>
                 </td>
+
             </tr>
         }
     </tbody>

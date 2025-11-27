@@ -33,7 +33,7 @@ namespace SIGECES.Controllers
 
             if (role == UserRole.Instructor.ToString() && int.TryParse(userIdStr, out int instructorId))
             {
-                // Instructores solo ven sus cursos
+                // Instructores solo ven sus propios cursos
                 query = query.Where(c => c.InstructorId == instructorId);
             }
 
@@ -59,7 +59,7 @@ namespace SIGECES.Controllers
             var role = User.FindFirstValue(ClaimTypes.Role);
             var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            // Si es instructor, forzamos que el InstructorId sea él mismo
+            // Si es instructor, el InstructorId se forza al usuario logueado
             if (role == UserRole.Instructor.ToString() && int.TryParse(userIdStr, out int instructorId))
             {
                 course.InstructorId = instructorId;
@@ -74,6 +74,7 @@ namespace SIGECES.Controllers
             _context.Courses.Add(course);
             await _context.SaveChangesAsync();
 
+            TempData["SuccessMessage"] = "Curso creado correctamente.";
             return RedirectToAction(nameof(Index));
         }
 
@@ -87,15 +88,8 @@ namespace SIGECES.Controllers
             if (course == null)
                 return NotFound();
 
-            // Instructores solo pueden editar sus propios cursos
-            var role = User.FindFirstValue(ClaimTypes.Role);
-            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (role == UserRole.Instructor.ToString() &&
-                int.TryParse(userIdStr, out int instructorId) &&
-                course.InstructorId != instructorId)
-            {
+            if (!UserCanManageCourse(course))
                 return Forbid();
-            }
 
             await LoadDropdownsAsync(course.InstructorId);
             return View(course);
@@ -126,8 +120,12 @@ namespace SIGECES.Controllers
 
             try
             {
+                if (!UserCanManageCourse(course))
+                    return Forbid();
+
                 _context.Update(course);
                 await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Curso actualizado correctamente.";
             }
             catch (DbUpdateConcurrencyException ex)
             {
@@ -156,15 +154,8 @@ namespace SIGECES.Controllers
             if (course == null)
                 return NotFound();
 
-            // Instructores solo pueden ver/eliminar sus propios cursos (si lo permites)
-            var role = User.FindFirstValue(ClaimTypes.Role);
-            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (role == UserRole.Instructor.ToString() &&
-                int.TryParse(userIdStr, out int instructorId) &&
-                course.InstructorId != instructorId)
-            {
+            if (!UserCanManageCourse(course))
                 return Forbid();
-            }
 
             return View(course);
         }
@@ -178,19 +169,143 @@ namespace SIGECES.Controllers
             if (course == null)
                 return RedirectToAction(nameof(Index));
 
-            var role = User.FindFirstValue(ClaimTypes.Role);
-            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (role == UserRole.Instructor.ToString() &&
-                int.TryParse(userIdStr, out int instructorId) &&
-                course.InstructorId != instructorId)
-            {
+            if (!UserCanManageCourse(course))
                 return Forbid();
-            }
 
             _context.Courses.Remove(course);
             await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Curso eliminado correctamente.";
             return RedirectToAction(nameof(Index));
         }
+
+        // =========================
+        // Gestionar inscripciones
+        // =========================
+
+        // Lista de estudiantes inscritos en un curso
+        public async Task<IActionResult> Students(int id)
+        {
+            var course = await _context.Courses
+                .Include(c => c.Enrollments!)
+                    .ThenInclude(e => e.Student)
+                .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (course == null)
+                return NotFound();
+
+            if (!UserCanManageCourse(course))
+                return Forbid();
+
+            return View(course);
+        }
+
+        // Agregar estudiante al curso POR CORREO
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddEnrollment(int courseId, string studentEmail)
+        {
+            var course = await _context.Courses
+                .Include(c => c.Enrollments)
+                .FirstOrDefaultAsync(c => c.Id == courseId);
+
+            if (course == null)
+                return NotFound();
+
+            if (!UserCanManageCourse(course))
+                return Forbid();
+
+            if (string.IsNullOrWhiteSpace(studentEmail))
+            {
+                TempData["ErrorMessage"] = "Debes ingresar el correo del estudiante.";
+                return RedirectToAction(nameof(Students), new { id = courseId });
+            }
+
+            studentEmail = studentEmail.Trim().ToLower();
+
+            var student = await _context.Users
+                .FirstOrDefaultAsync(u => u.Email.ToLower() == studentEmail
+                                          && u.IsActive
+                                          && u.Role == UserRole.Student);
+
+            if (student == null)
+            {
+                TempData["ErrorMessage"] = "No se encontró un estudiante activo con ese correo.";
+                return RedirectToAction(nameof(Students), new { id = courseId });
+            }
+
+            var alreadyEnrolled = course.Enrollments != null &&
+                                  course.Enrollments.Any(e => e.StudentId == student.Id);
+            if (alreadyEnrolled)
+            {
+                TempData["ErrorMessage"] = "El estudiante ya está inscrito en este curso.";
+                return RedirectToAction(nameof(Students), new { id = courseId });
+            }
+
+            var enrollment = new Enrollment
+            {
+                CourseId = courseId,
+                StudentId = student.Id,
+                EnrolledAt = DateTime.UtcNow,
+                Status = EnrollmentStatus.InProgress
+            };
+
+            _context.Enrollments.Add(enrollment);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Estudiante inscrito correctamente.";
+            return RedirectToAction(nameof(Students), new { id = courseId });
+        }
+
+        // Cambiar estado de una inscripción (InProgress / Completed)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateEnrollmentStatus(int enrollmentId, EnrollmentStatus status)
+        {
+            var enrollment = await _context.Enrollments
+                .Include(e => e.Course)
+                .FirstOrDefaultAsync(e => e.Id == enrollmentId);
+
+            if (enrollment == null)
+                return NotFound();
+
+            if (enrollment.Course == null || !UserCanManageCourse(enrollment.Course))
+                return Forbid();
+
+            enrollment.Status = status;
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Estado de la inscripción actualizado correctamente.";
+            return RedirectToAction(nameof(Students), new { id = enrollment.CourseId });
+        }
+
+        // Quitar manualmente a un estudiante del curso
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> RemoveEnrollment(int enrollmentId)
+        {
+            var enrollment = await _context.Enrollments
+                .Include(e => e.Course)
+                .FirstOrDefaultAsync(e => e.Id == enrollmentId);
+
+            if (enrollment == null)
+                return RedirectToAction(nameof(Index));
+
+            if (enrollment.Course == null || !UserCanManageCourse(enrollment.Course))
+                return Forbid();
+
+            var courseId = enrollment.CourseId;
+
+            _context.Enrollments.Remove(enrollment);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Estudiante removido del curso.";
+            return RedirectToAction(nameof(Students), new { id = courseId });
+        }
+
+        // =========================
+        // Helpers privados
+        // =========================
 
         private bool CourseExists(int id)
         {
@@ -211,6 +326,24 @@ namespace SIGECES.Controllers
 
             ViewBag.CategoryId = new SelectList(categories, "Id", "Name");
             ViewBag.InstructorId = new SelectList(instructors, "Id", "FullName", selectedInstructorId);
+        }
+
+        // Permisos: Admin todo, Instructor solo sus cursos
+        private bool UserCanManageCourse(Course course)
+        {
+            var role = User.FindFirstValue(ClaimTypes.Role);
+            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (role == UserRole.Admin.ToString())
+                return true;
+
+            if (role == UserRole.Instructor.ToString() &&
+                int.TryParse(userIdStr, out int instructorId))
+            {
+                return course.InstructorId == instructorId;
+            }
+
+            return false;
         }
     }
 }
