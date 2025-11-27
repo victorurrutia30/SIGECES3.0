@@ -1,0 +1,57 @@
+﻿@model IEnumerable<SIGECES.Models.Course>
+
+@{
+    ViewData["Title"] = "Catálogo de cursos";
+    var enrolledIds = ViewBag.EnrolledCourseIds as List<int> ?? new List<int>();
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Curso</th>
+            <th>Categoría</th>
+            <th>Instructor</th>
+            <th>Estado</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var course in Model)
+        {
+            var isEnrolled = enrolledIds.Contains(course.Id);
+            <tr>
+                <td>@course.Title</td>
+                <td>@course.Category?.Name</td>
+                <td>@course.Instructor?.FullName</td>
+                <td>
+                    @if (isEnrolled)
+                    {
+                        <span class="badge bg-success">Inscrito</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Disponible</span>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@course.Id" class="btn btn-sm btn-outline-primary">
+                        Ver detalles
+                    </a>
+
+                    @if (!isEnrolled)
+                    {
+                        <form asp-action="Enroll" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="courseId" value="@course.Id" />
+                            <button type="submit" class="btn btn-sm btn-primary">
+                                Inscribirme
+                            </button>
+                        </form>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

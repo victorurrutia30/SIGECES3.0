@@ -1,0 +1,73 @@
+﻿@model SIGECES.Models.Course
+
+@{
+    ViewData["Title"] = "Detalle del curso";
+    bool isEnrolled = ViewBag.IsEnrolled ?? false;
+    SIGECES.Models.EnrollmentStatus? status = ViewBag.EnrollmentStatus as SIGECES.Models.EnrollmentStatus?;
+}
+
+<h2>@Model.Title</h2>
+
+<p>
+    <strong>Categoría:</strong> @Model.Category?.Name <br />
+    <strong>Instructor:</strong> @Model.Instructor?.FullName
+</p>
+
+<p>@Model.Description</p>
+
+<p>
+    <strong>Estado:</strong>
+    @if (isEnrolled)
+    {
+        <span class="badge bg-success">
+            Inscrito (@(status?.ToString() ?? "InProgress"))
+        </span>
+    }
+    else
+    {
+        <span class="badge bg-secondary">No inscrito</span>
+    }
+</p>
+
+@if (!isEnrolled)
+{
+    <form asp-action="Enroll" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="courseId" value="@Model.Id" />
+        <button type="submit" class="btn btn-primary">Inscribirme en este curso</button>
+    </form>
+}
+
+<hr />
+
+<h3>Lecciones</h3>
+
+@if (Model.Lessons != null && Model.Lessons.Any())
+{
+    <ol>
+        @foreach (var lesson in Model.Lessons.OrderBy(l => l.Order))
+        {
+            <li>
+                <strong>@lesson.Title</strong><br />
+                @if (!string.IsNullOrWhiteSpace(lesson.Description))
+                {
+                    <span>@lesson.Description</span>
+        
+                    <br />
+                }
+                @if (!string.IsNullOrWhiteSpace(lesson.ResourceUrl))
+                {
+                    <a href="@lesson.ResourceUrl" target="_blank">Recurso</a>
+                }
+            </li>
+        }
+    </ol>
+}
+else
+{
+    <p>Este curso aún no tiene lecciones configuradas.</p>
+}
+
+<p>
+    <a asp-action="Index" class="btn btn-secondary">Volver al catálogo</a>
+</p>

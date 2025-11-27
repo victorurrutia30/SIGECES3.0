@@ -1,0 +1,48 @@
+﻿@model IEnumerable<SIGECES.Models.Enrollment>
+
+@{
+    ViewData["Title"] = "Mis cursos";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+@if (!Model.Any())
+{
+    <p>Aún no estás inscrito en ningún curso.</p>
+    <p>
+        <a asp-action="Index" class="btn btn-primary">Ver catálogo de cursos</a>
+    </p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Curso</th>
+                <th>Categoría</th>
+                <th>Instructor</th>
+                <th>Fecha de inscripción</th>
+                <th>Estado</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var enrollment in Model)
+            {
+                var course = enrollment.Course!;
+                <tr>
+                    <td>@course.Title</td>
+                    <td>@course.Category?.Name</td>
+                    <td>@course.Instructor?.FullName</td>
+                    <td>@enrollment.EnrolledAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>@enrollment.Status</td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@course.Id" class="btn btn-sm btn-outline-primary">
+                            Ver curso
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

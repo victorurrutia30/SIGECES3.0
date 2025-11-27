@@ -33,15 +33,24 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
 
-                        @* Link de Cursos solo para Admin e Instructor *@
+                        @* Links según rol *@
                         @if (User.IsInRole("Admin") || User.IsInRole("Instructor"))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Courses" asp-action="Index">Cursos</a>
                             </li>
                         }
+                        else if (User.IsInRole("Student"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="StudentCourses" asp-action="Index">Catálogo</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="StudentCourses" asp-action="MyCourses">Mis cursos</a>
+                            </li>
+                        }
 
-                        @* Espacio empujando a la derecha los elementos de usuario *@
+                        @* Espacio + usuario / login/logout *@
                         @if (isAuthenticated)
                         {
                             <li class="nav-item ms-auto">
@@ -71,6 +80,7 @@
             </div>
         </nav>
     </header>
+
 
     <div class="container">
         <main role="main" class="pb-3">
