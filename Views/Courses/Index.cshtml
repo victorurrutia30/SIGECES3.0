@@ -1,0 +1,38 @@
+﻿@model IEnumerable<SIGECES.Models.Course>
+
+@{
+    ViewData["Title"] = "Cursos";
+}
+
+<h2>Cursos</h2>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Crear nuevo curso</a>
+</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Título</th>
+            <th>Categoría</th>
+            <th>Instructor</th>
+            <th>Activo</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Title</td>
+                <td>@item.Category?.Name</td>
+                <td>@item.Instructor?.FullName</td>
+                <td>@(item.IsActive ? "Sí" : "No")</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Editar</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
