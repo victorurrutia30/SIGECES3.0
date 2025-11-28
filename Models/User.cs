@@ -8,20 +8,24 @@ public class User
 
     [Required]
     [StringLength(120)]
+    [Display(Name = "Nombre completo")]
     public string FullName { get; set; } = null!;
 
     [Required]
     [EmailAddress]
     [StringLength(200)]
+    [Display(Name = "Correo electrónico")]
     public string Email { get; set; } = null!;
 
-    // Más adelante haremos el hash, por ahora lo dejamos como string normal
     [Required]
+    [Display(Name = "Contraseña (hash)")]
     public string PasswordHash { get; set; } = null!;
 
     [Required]
+    [Display(Name = "Rol")]
     public UserRole Role { get; set; }
 
+    [Display(Name = "Activo")]
     public bool IsActive { get; set; } = true;
 
     // Navegación

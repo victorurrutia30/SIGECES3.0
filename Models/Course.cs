@@ -8,22 +8,25 @@ public class Course
 
     [Required]
     [StringLength(200)]
+    [Display(Name = "Título del curso")]
     public string Title { get; set; } = null!;
 
     [Required]
     [StringLength(2000)]
+    [Display(Name = "Descripción")]
     public string Description { get; set; } = null!;
 
-    // Relación con categoría
     [Required]
+    [Display(Name = "Categoría")]
     public int CategoryId { get; set; }
     public CourseCategory? Category { get; set; }
 
-    // Instructor asignado
     [Required]
+    [Display(Name = "Instructor")]
     public int InstructorId { get; set; }
     public User? Instructor { get; set; }
 
+    [Display(Name = "Activo")]
     public bool IsActive { get; set; } = true;
 
     // Navegación

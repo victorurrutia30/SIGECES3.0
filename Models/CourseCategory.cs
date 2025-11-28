@@ -8,11 +8,14 @@ public class CourseCategory
 
     [Required]
     [StringLength(100)]
+    [Display(Name = "Nombre de la categoría")]
     public string Name { get; set; } = null!;
 
     [StringLength(500)]
+    [Display(Name = "Descripción")]
     public string? Description { get; set; }
 
+    [Display(Name = "Activa")]
     public bool IsActive { get; set; } = true;
 
     // Navegación

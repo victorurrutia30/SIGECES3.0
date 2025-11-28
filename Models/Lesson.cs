@@ -12,15 +12,17 @@ public class Lesson
 
     [Required]
     [StringLength(200)]
+    [Display(Name = "Título de la lección")]
     public string Title { get; set; } = null!;
 
     [StringLength(2000)]
+    [Display(Name = "Descripción")]
     public string? Description { get; set; }
 
-    // Puede ser link a PDF, video, etc.
     [StringLength(500)]
+    [Display(Name = "URL del recurso")]
     public string? ResourceUrl { get; set; }
 
-    // Orden dentro del curso
+    [Display(Name = "Orden")]
     public int Order { get; set; } = 1;
 }

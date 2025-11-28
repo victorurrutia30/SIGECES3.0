@@ -35,7 +35,7 @@ else
                     <td>@course.Category?.Name</td>
                     <td>@course.Instructor?.FullName</td>
                     <td>@enrollment.EnrolledAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
-                    <td>@enrollment.Status</td>
+                    <td>@enrollment.Status.GetDisplayName()</td>
                     <td>
                         <a asp-action="Details" asp-route-id="@course.Id" class="btn btn-sm btn-outline-primary">
                             Ver curso

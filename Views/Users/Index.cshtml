@@ -26,7 +26,7 @@
             <tr>
                 <td>@user.FullName</td>
                 <td>@user.Email</td>
-                <td>@user.Role</td>
+                <td>@user.Role.GetDisplayName()</td>
                 <td>@(user.IsActive ? "Sí" : "No")</td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@user.Id" class="btn btn-sm btn-outline-primary">Editar</a>
