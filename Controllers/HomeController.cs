@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SIGECES.Data;
@@ -19,7 +20,9 @@ namespace SIGECES.Controllers
 
         public async Task<IActionResult> Index()
         {
-            // Solo calculamos KPIs si es Admin
+            // ======================
+            // Admin: KPIs globales
+            // ======================
             if (User.IsInRole("Admin"))
             {
                 var totalUsers = await _context.Users.CountAsync();
@@ -45,6 +48,94 @@ namespace SIGECES.Controllers
                 ViewBag.TotalEnrollments = totalEnrollments;
                 ViewBag.CompletedEnrollments = completedEnrollments;
                 ViewBag.GlobalCompletionPercent = completionPercent;
+            }
+            // ===========================
+            // Instructor: KPIs personales
+            // ===========================
+            else if (User.IsInRole("Instructor"))
+            {
+                var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (int.TryParse(userIdStr, out int instructorId))
+                {
+                    var myCourses = await _context.Courses
+                        .Include(c => c.Enrollments)
+                        .Where(c => c.InstructorId == instructorId)
+                        .ToListAsync();
+
+                    var myCourseIds = myCourses.Select(c => c.Id).ToList();
+
+                    var myEnrollmentsQuery = _context.Enrollments
+                        .Where(e => myCourseIds.Contains(e.CourseId));
+
+                    int myCoursesCount = myCourses.Count;
+                    int myActiveCourses = myCourses.Count(c => c.IsActive);
+                    int myTotalEnrollments = await myEnrollmentsQuery.CountAsync();
+                    int myCompletedEnrollments = await myEnrollmentsQuery
+                        .CountAsync(e => e.Status == EnrollmentStatus.Completed);
+
+                    int myCompletionPercent = myTotalEnrollments == 0
+                        ? 0
+                        : (myCompletedEnrollments * 100 / myTotalEnrollments);
+
+                    ViewBag.MyCoursesCount = myCoursesCount;
+                    ViewBag.MyActiveCourses = myActiveCourses;
+                    ViewBag.MyTotalEnrollments = myTotalEnrollments;
+                    ViewBag.MyCompletedEnrollments = myCompletedEnrollments;
+                    ViewBag.MyCompletionPercent = myCompletionPercent;
+                }
+            }
+            // ==========================
+            // Student: dashboard propio
+            // ==========================
+            else if (User.IsInRole("Student"))
+            {
+                var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (int.TryParse(userIdStr, out int studentId))
+                {
+                    // Todas sus inscripciones
+                    var myEnrollments = await _context.Enrollments
+                        .Include(e => e.Course)
+                        .Where(e => e.StudentId == studentId)
+                        .ToListAsync();
+
+                    int myTotalEnrollments = myEnrollments.Count;
+                    int myInProgress = myEnrollments.Count(e => e.Status == EnrollmentStatus.InProgress);
+                    int myCompleted = myEnrollments.Count(e => e.Status == EnrollmentStatus.Completed);
+
+                    // Cursos activos en los que está inscrito
+                    var myActiveCourseIds = myEnrollments
+                        .Where(e => e.Course != null && e.Course.IsActive)
+                        .Select(e => e.CourseId)
+                        .Distinct()
+                        .ToList();
+
+                    int totalLessons = 0;
+                    int completedLessons = 0;
+                    int lessonsPercent = 0;
+
+                    if (myActiveCourseIds.Any())
+                    {
+                        totalLessons = await _context.Lessons
+                            .Where(l => myActiveCourseIds.Contains(l.CourseId))
+                            .CountAsync();
+
+                        completedLessons = await _context.LessonProgresses
+                            .Where(lp => lp.StudentId == studentId
+                                         && myActiveCourseIds.Contains(lp.Lesson!.CourseId))
+                            .CountAsync();
+
+                        lessonsPercent = totalLessons == 0
+                            ? 0
+                            : (completedLessons * 100 / totalLessons);
+                    }
+
+                    ViewBag.MyTotalEnrollments_Student = myTotalEnrollments;
+                    ViewBag.MyInProgressEnrollments_Student = myInProgress;
+                    ViewBag.MyCompletedEnrollments_Student = myCompleted;
+                    ViewBag.MyTotalLessons_Student = totalLessons;
+                    ViewBag.MyCompletedLessons_Student = completedLessons;
+                    ViewBag.MyLessonsCompletionPercent_Student = lessonsPercent;
+                }
             }
 
             return View();

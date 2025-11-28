@@ -1,0 +1,62 @@
+﻿@{
+    ViewData["Title"] = "Reportes del Instructor";
+}
+
+<h2 class="mb-4">Reportes de mis cursos</h2>
+
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="text-muted small">Mis cursos</div>
+                <div class="display-6 fw-bold">@ViewBag.TotalCourses</div>
+                <div class="text-muted small">Total creados</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="text-muted small">Cursos activos</div>
+                <div class="display-6 fw-bold">@ViewBag.ActiveCourses</div>
+                <div class="text-muted small">Visibles para estudiantes</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="text-muted small">Inscripciones</div>
+                <div class="display-6 fw-bold">@ViewBag.TotalEnrollments</div>
+                <div class="text-muted small">En todos tus cursos</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-body">
+                <div class="text-muted small">Finalización global</div>
+                <div class="display-6 fw-bold">@ViewBag.CompletionPercent %</div>
+                <div class="text-muted small">Completados / inscritos</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body">
+        <h5 class="card-title">Exportar datos</h5>
+        <p class="card-text">
+            Descarga reportes detallados en CSV para analizarlos en Excel u otra herramienta.
+        </p>
+        <a asp-action="ExportCoursesCsv" class="btn btn-sm btn-primary me-2">
+            Exportar mis cursos (CSV)
+        </a>
+        <a asp-action="ExportEnrollmentsCsv" class="btn btn-sm btn-outline-secondary">
+            Exportar inscripciones de mis cursos (CSV)
+        </a>
+    </div>
+</div>
