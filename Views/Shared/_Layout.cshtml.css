@@ -43,7 +43,52 @@
     background-color: var(--utec-light-bg);
 }
 
-/* Footer */
+:root {
+    --utec-primary: #5D0A28;
+    --utec-primary-dark: #4a071f;
+    --utec-light-bg: #F8F9FA;
+    --utec-footer-bg: #343A40;
+    --utec-footer-text: #F8F9FA;
+}
+
+/* Sidebar vertical (navbar-vertical de Tabler) */
+.navbar.navbar-vertical {
+    background-color: var(--utec-primary);
+}
+
+    /* Texto e iconos del sidebar */
+    .navbar.navbar-vertical .navbar-brand,
+    .navbar.navbar-vertical .navbar-brand a,
+    .navbar.navbar-vertical .nav-link,
+    .navbar.navbar-vertical .nav-link .nav-link-title,
+    .navbar.navbar-vertical .nav-link .nav-link-icon,
+    .navbar.navbar-vertical .navbar-nav .nav-link {
+        color: #f8f9fa;
+    }
+
+        /* Hover / activo en el menú lateral */
+        .navbar.navbar-vertical .nav-link:hover,
+        .navbar.navbar-vertical .nav-link.active {
+            background-color: rgba(248, 249, 250, 0.12);
+            color: #ffffff;
+        }
+
+            .navbar.navbar-vertical .nav-link.active .nav-link-title {
+                font-weight: 600;
+            }
+
+/* Top bar (barra de usuario) */
+.page-wrapper > .navbar {
+    background-color: #ffffff;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Fondo del contenido principal */
+.page-wrapper {
+    background-color: var(--utec-light-bg);
+}
+
+/* Footer base */
 .footer {
     background-color: var(--utec-footer-bg);
     color: var(--utec-footer-text);
@@ -51,6 +96,7 @@
 
     .footer a {
         color: var(--utec-footer-text);
+        text-decoration: none;
     }
 
         .footer a:hover {
@@ -60,4 +106,44 @@
     /* Altura mínima para que no se vea aplastado */
     .footer .row {
         min-height: 3rem;
+    }
+
+/* Footer UTEC: texto e info */
+.footer-brand {
+    font-weight: 600;
+    margin-bottom: 0.15rem;
+}
+
+.footer-copy {
+    color: rgba(248, 249, 250, 0.80);
+}
+
+/* Redes sociales */
+.footer-social-label {
+    color: rgba(248, 249, 250, 0.80);
+}
+
+.footer-social {
+    display: inline-flex;
+    gap: 0.6rem;
+}
+
+.footer-social-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 999px;
+    border: 1px solid rgba(248, 249, 250, 0.45);
+    font-size: 1.25rem;
+    color: var(--utec-footer-text);
+    transition: background-color 0.15s ease, color 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
+}
+
+    .footer-social-link:hover {
+        background-color: #ffffff;
+        color: var(--utec-primary-dark); /* aquí el ícono se vuelve oscuro y se ve */
+        border-color: #ffffff;
+        transform: translateY(-1px);
     }

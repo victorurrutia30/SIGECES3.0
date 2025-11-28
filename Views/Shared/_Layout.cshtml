@@ -1,7 +1,7 @@
 ﻿@using System.Security.Claims
 
 <!doctype html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -203,18 +203,46 @@
 
             <footer class="footer footer-transparent d-print-none">
                 <div class="container-xl">
-                    <div class="row text-center align-items-center flex-row-reverse">
-                        <div class="col-lg-auto ms-lg-auto">
-                            &copy; @DateTime.Now.Year - SIGECES
+                    <div class="row align-items-center py-3">
+                        <!-- Columna izquierda: info SIGECES / UTEC -->
+                        <div class="col-12 col-md-7 text-center text-md-start mb-2 mb-md-0">
+                            <div class="footer-brand">
+                                <strong>SIGECES</strong> · Sistema de gestión de cursos extracurriculares
+                            </div>
+                            <div class="footer-copy small">
+                                &copy; @DateTime.Now.Year Universidad Tecnológica de El Salvador · UTEC
+                            </div>
+                            <div class="footer-copy small">
+                                Campus: 1ª calle poniente, edificio "Los Fundadores" No. 1138, San Salvador ·
+                                Tel: 2275-8888
+                            </div>
                         </div>
-                        <div class="col-12 col-lg-auto mt-3 mt-lg-0">
-                            <a asp-area="" asp-controller="Home" asp-action="Privacy" class="link-secondary">
-                                Privacy
-                            </a>
+
+                        <!-- Columna derecha: redes sociales -->
+                        <div class="col-12 col-md-5 text-center text-md-end">
+                            <div class="footer-social-label small mb-1">
+                                Síguenos en redes
+                            </div>
+                            <div class="footer-social">
+                                @* Reemplaza los href con las URLs oficiales que quieras usar *@
+                                <a href="#" target="_blank" rel="noopener noreferrer" class="footer-social-link" title="Facebook UTEC">
+                                    <i class="ti ti-brand-facebook"></i>
+                                </a>
+                                <a href="#" target="_blank" rel="noopener noreferrer" class="footer-social-link" title="Instagram UTEC">
+                                    <i class="ti ti-brand-instagram"></i>
+                                </a>
+                                <a href="#" target="_blank" rel="noopener noreferrer" class="footer-social-link" title="YouTube UTEC">
+                                    <i class="ti ti-brand-youtube"></i>
+                                </a>
+                                <a href="#" target="_blank" rel="noopener noreferrer" class="footer-social-link" title="X (Twitter) UTEC">
+                                    <i class="ti ti-brand-x"></i>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
             </footer>
+
         </div>
     </div>
 
