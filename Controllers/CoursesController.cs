@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Security.Claims;
+
 using Microsoft.EntityFrameworkCore;
 using SIGECES.Data;
 using SIGECES.Models;
@@ -21,25 +23,44 @@ namespace SIGECES.Controllers
         }
 
         // GET: Courses
-        public async Task<IActionResult> Index()
+        // GET: Courses
+        public async Task<IActionResult> Index(string? q, bool? onlyActive)
         {
-            var query = _context.Courses
+            var coursesQuery = _context.Courses
                 .Include(c => c.Category)
                 .Include(c => c.Instructor)
                 .AsQueryable();
 
-            var role = User.FindFirstValue(ClaimTypes.Role);
-            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var role = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+            var currentUserId = GetCurrentUserId();
 
-            if (role == UserRole.Instructor.ToString() && int.TryParse(userIdStr, out int instructorId))
+            // Si es instructor, solo ve sus cursos
+            if (role == "Instructor")
             {
-                // Instructores solo ven sus propios cursos
-                query = query.Where(c => c.InstructorId == instructorId);
+                coursesQuery = coursesQuery.Where(c => c.InstructorId == currentUserId);
             }
 
-            var courses = await query
-                .OrderBy(c => c.Title)
+            if (!string.IsNullOrWhiteSpace(q))
+            {
+                q = q.Trim();
+                coursesQuery = coursesQuery.Where(c =>
+                    c.Title.Contains(q) ||
+                    (c.Category != null && c.Category.Name.Contains(q)) ||
+                    (c.Instructor != null && c.Instructor.FullName.Contains(q)));
+            }
+
+            if (onlyActive == true)
+            {
+                coursesQuery = coursesQuery.Where(c => c.IsActive);
+            }
+
+            var courses = await coursesQuery
+                .OrderBy(c => c.Category!.Name)
+                .ThenBy(c => c.Title)
                 .ToListAsync();
+
+            ViewBag.Search = q;
+            ViewBag.OnlyActive = onlyActive == true;
 
             return View(courses);
         }
@@ -363,5 +384,16 @@ namespace SIGECES.Controllers
 
             return false;
         }
+
+        private int GetCurrentUserId()
+        {
+            var idClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+
+            if (idClaim == null)
+                throw new InvalidOperationException("No se pudo obtener el usuario actual.");
+
+            return int.Parse(idClaim.Value);
+        }
+
     }
 }

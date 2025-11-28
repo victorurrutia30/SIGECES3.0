@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using SIGECES.Data;
 using SIGECES.Models;
 
+
 namespace SIGECES.Controllers
 {
     [Authorize(Roles = "Student")]
@@ -20,29 +21,54 @@ namespace SIGECES.Controllers
         }
 
         // Catálogo de cursos disponibles
-        public async Task<IActionResult> Index()
+        // GET: StudentCourses
+        // Catálogo de cursos para estudiantes con búsqueda + paginación
+        public async Task<IActionResult> Index(string? q, int page = 1, int pageSize = 9)
         {
             var studentId = GetCurrentUserId();
             if (studentId == null)
                 return Unauthorized();
 
-            var courses = await _context.Courses
-                .Include(c => c.Category)
-                .Include(c => c.Instructor)
-                .Where(c => c.IsActive)
-                .OrderBy(c => c.Category!.Name)
-                .ThenBy(c => c.Title)
-                .ToListAsync();
-
-            var enrolledIds = await _context.Enrollments
+            var enrolledCourseIds = await _context.Enrollments
                 .Where(e => e.StudentId == studentId.Value)
                 .Select(e => e.CourseId)
                 .ToListAsync();
 
-            ViewBag.EnrolledCourseIds = enrolledIds;
+            var coursesQuery = _context.Courses
+                .Include(c => c.Category)
+                .Include(c => c.Instructor)
+                .Where(c => c.IsActive)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(q))
+            {
+                q = q.Trim();
+                coursesQuery = coursesQuery.Where(c =>
+                    c.Title.Contains(q) ||
+                    (c.Category != null && c.Category.Name.Contains(q)) ||
+                    (c.Instructor != null && c.Instructor.FullName.Contains(q)));
+            }
+
+            var totalItems = await coursesQuery.CountAsync();
+
+            var courses = await coursesQuery
+                .OrderBy(c => c.Category!.Name)
+                .ThenBy(c => c.Title)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            ViewBag.EnrolledCourseIds = enrolledCourseIds;
+            ViewBag.Search = q;
+            ViewBag.Page = page;
+            ViewBag.PageSize = pageSize;
+            ViewBag.TotalItems = totalItems;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalItems / pageSize);
 
             return View(courses);
         }
+
+
 
         // Detalle de un curso (info + lecciones)
         public async Task<IActionResult> Details(int id)
@@ -212,6 +238,8 @@ namespace SIGECES.Controllers
             enrollment.Status = EnrollmentStatus.Completed;
             await _context.SaveChangesAsync();
         }
+
+
 
 
 

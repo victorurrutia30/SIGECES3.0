@@ -18,15 +18,77 @@
 
 @if (!isAuthenticated)
 {
-    <div class="alert alert-info">
-        Para acceder a los cursos, inicia sesión con tu usuario de SIGECES.
-    </div>
+    <div class="row align-items-center mb-4">
+        <div class="col-lg-7">
+            <h2 class="mb-2">
+                Gestiona los cursos extracurriculares de la UTEC desde un solo lugar
+            </h2>
+            <p class="text-muted">
+                SIGECES centraliza la oferta de cursos, facilita la inscripción de estudiantes
+                y permite a docentes y coordinación académica dar seguimiento al avance.
+            </p>
 
-    <p>
-        <a asp-controller="Account" asp-action="Login" class="btn btn-primary">
-            Iniciar sesión
-        </a>
-    </p>
+            <div class="d-flex flex-wrap gap-2 mt-3">
+                <a asp-controller="Account" asp-action="Login" class="btn btn-primary">
+                    <i class="ti ti-login me-1"></i>
+                    Iniciar sesión
+                </a>
+                <a href="#" class="btn btn-outline-secondary disabled">
+                    Demo pública (próximamente)
+                </a>
+            </div>
+
+            <ul class="list-unstyled mt-4 text-muted">
+                <li>• Catálogo único de cursos extracurriculares.</li>
+                <li>• Inscripciones controladas por docente o administración.</li>
+                <li>• Reportes de avance por estudiante, curso y docente.</li>
+            </ul>
+        </div>
+
+        <div class="col-lg-5 mt-3 mt-lg-0">
+            <div class="card shadow-sm border-0">
+                <div class="card-body">
+                    <h3 class="card-title mb-3">¿Para quién es SIGECES?</h3>
+
+                    <div class="mb-3 d-flex">
+                        <span class="avatar bg-primary-lt me-2">
+                            <i class="ti ti-school"></i>
+                        </span>
+                        <div>
+                            <div class="fw-semibold">Estudiantes</div>
+                            <div class="text-muted small">
+                                Exploran el catálogo, se inscriben y llevan control de sus cursos.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3 d-flex">
+                        <span class="avatar bg-green-lt me-2">
+                            <i class="ti ti-chalkboard"></i>
+                        </span>
+                        <div>
+                            <div class="fw-semibold">Docentes</div>
+                            <div class="text-muted small">
+                                Gestionan sus cursos, lecciones y seguimiento del grupo.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex">
+                        <span class="avatar bg-yellow-lt me-2">
+                            <i class="ti ti-report-analytics"></i>
+                        </span>
+                        <div>
+                            <div class="fw-semibold">Administración</div>
+                            <div class="text-muted small">
+                                Visualizan indicadores globales y exportan reportes.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 }
 else if (User.IsInRole("Admin"))
 {

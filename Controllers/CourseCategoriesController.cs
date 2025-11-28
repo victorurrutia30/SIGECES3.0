@@ -19,15 +19,35 @@ namespace SIGECES.Controllers
         }
 
         // GET: CourseCategories
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? q, bool? onlyActive)
         {
-            var categories = await _context.CourseCategories
+            var categoriesQuery = _context.CourseCategories
                 .Include(c => c.Courses)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(q))
+            {
+                q = q.Trim();
+                categoriesQuery = categoriesQuery.Where(c =>
+                    c.Name.Contains(q) ||
+                    (!string.IsNullOrEmpty(c.Description) && c.Description!.Contains(q)));
+            }
+
+            if (onlyActive == true)
+            {
+                categoriesQuery = categoriesQuery.Where(c => c.IsActive);
+            }
+
+            var categories = await categoriesQuery
                 .OrderBy(c => c.Name)
                 .ToListAsync();
 
+            ViewBag.Search = q;
+            ViewBag.OnlyActive = onlyActive == true;
+
             return View(categories);
         }
+
 
         // GET: CourseCategories/Create
         public IActionResult Create()
