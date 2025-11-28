@@ -1,62 +1,80 @@
-﻿@{
-    ViewData["Title"] = "Reportes del Instructor";
+﻿﻿@{
+ViewData["Title"] = "Reportes del Instructor";
 }
 
-<h2 class="mb-4">Reportes de mis cursos</h2>
+<div class="page-header d-print-none mb-3">
+    <div class="row align-items-center">
+        <div class="col">
+            <div class="page-pretitle">
+                Instructor
+            </div>
+            <h2 class="page-title">
+                Reportes de mis cursos
+            </h2>
+            <div class="text-muted small">
+                KPIs rápidos y exportaciones en CSV de tus cursos y sus inscripciones.
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="row mb-4">
     <div class="col-md-3 mb-3">
-        <div class="card shadow-sm border-0 h-100">
+        <div class="card h-100">
             <div class="card-body">
-                <div class="text-muted small">Mis cursos</div>
-                <div class="display-6 fw-bold">@ViewBag.TotalCourses</div>
+                <div class="text-muted small mb-1">Mis cursos</div>
+                <div class="h1 mb-1">@ViewBag.TotalCourses</div>
                 <div class="text-muted small">Total creados</div>
             </div>
         </div>
     </div>
 
     <div class="col-md-3 mb-3">
-        <div class="card shadow-sm border-0 h-100">
+        <div class="card h-100">
             <div class="card-body">
-                <div class="text-muted small">Cursos activos</div>
-                <div class="display-6 fw-bold">@ViewBag.ActiveCourses</div>
+                <div class="text-muted small mb-1">Cursos activos</div>
+                <div class="h1 mb-1">@ViewBag.ActiveCourses</div>
                 <div class="text-muted small">Visibles para estudiantes</div>
             </div>
         </div>
     </div>
 
     <div class="col-md-3 mb-3">
-        <div class="card shadow-sm border-0 h-100">
+        <div class="card h-100">
             <div class="card-body">
-                <div class="text-muted small">Inscripciones</div>
-                <div class="display-6 fw-bold">@ViewBag.TotalEnrollments</div>
+                <div class="text-muted small mb-1">Inscripciones</div>
+                <div class="h1 mb-1">@ViewBag.TotalEnrollments</div>
                 <div class="text-muted small">En todos tus cursos</div>
             </div>
         </div>
     </div>
 
     <div class="col-md-3 mb-3">
-        <div class="card shadow-sm border-0 h-100">
+        <div class="card h-100">
             <div class="card-body">
-                <div class="text-muted small">Finalización global</div>
-                <div class="display-6 fw-bold">@ViewBag.CompletionPercent %</div>
+                <div class="text-muted small mb-1">Finalización global</div>
+                <div class="h1 mb-1">@ViewBag.CompletionPercent %</div>
                 <div class="text-muted small">Completados / inscritos</div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="card shadow-sm border-0">
+<div class="card">
     <div class="card-body">
-        <h5 class="card-title">Exportar datos</h5>
-        <p class="card-text">
+        <h3 class="card-title">Exportar datos</h3>
+        <p class="card-text text-muted">
             Descarga reportes detallados en CSV para analizarlos en Excel u otra herramienta.
         </p>
-        <a asp-action="ExportCoursesCsv" class="btn btn-sm btn-primary me-2">
-            Exportar mis cursos (CSV)
-        </a>
-        <a asp-action="ExportEnrollmentsCsv" class="btn btn-sm btn-outline-secondary">
-            Exportar inscripciones de mis cursos (CSV)
-        </a>
+        <div class="btn-list">
+            <a asp-action="ExportCoursesCsv" class="btn btn-primary btn-sm">
+                <i class="ti ti-download me-1"></i>
+                Exportar mis cursos (CSV)
+            </a>
+            <a asp-action="ExportEnrollmentsCsv" class="btn btn-outline-secondary btn-sm">
+                <i class="ti ti-download me-1"></i>
+                Exportar inscripciones de mis cursos (CSV)
+            </a>
+        </div>
     </div>
 </div>
