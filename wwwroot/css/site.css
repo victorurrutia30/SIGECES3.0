@@ -1,22 +1,124 @@
+/* Paleta UTEC global */
+:root {
+    --utec-primary: #5D0A28;
+    --utec-primary-dark: #4a071f;
+    --utec-light-bg: #F8F9FA;
+    --utec-footer-bg: #343A40;
+    --utec-footer-text: #F8F9FA;
+}
+
+/* Tipografía / base parecida al template original */
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
+html,
+body {
+    height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    margin: 0;
+    background-color: var(--utec-light-bg);
 }
+
+/* El contenedor principal de Tabler */
+.page {
+    min-height: 100vh;
+}
+
+/* Enlaces */
+a {
+    color: var(--utec-primary);
+    text-decoration: none;
+}
+
+    a:hover {
+        color: var(--utec-primary-dark);
+        text-decoration: underline;
+    }
+
+/* Botones primarios UTEC */
+.btn-primary {
+    color: #fff;
+    background-color: var(--utec-primary);
+    border-color: var(--utec-primary);
+}
+
+    .btn-primary:hover,
+    .btn-primary:focus,
+    .btn-primary:active {
+        color: #fff;
+        background-color: var(--utec-primary-dark);
+        border-color: var(--utec-primary-dark);
+    }
+
+/* Botones outline UTEC */
+.btn-outline-primary {
+    color: var(--utec-primary);
+    border-color: var(--utec-primary);
+    background-color: transparent;
+}
+
+    .btn-outline-primary:hover,
+    .btn-outline-primary:focus,
+    .btn-outline-primary:active {
+        color: #fff;
+        background-color: var(--utec-primary);
+        border-color: var(--utec-primary);
+    }
+
+/* Badges y texto primario */
+.badge.bg-primary,
+.bg-primary {
+    background-color: var(--utec-primary) !important;
+}
+
+.text-primary {
+    color: var(--utec-primary) !important;
+}
+
+/* Cards un poco más suaves */
+.card {
+    border-radius: 0.75rem;
+}
+
+/* Page header de Tabler */
+.page-header .page-pretitle {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.75rem;
+    color: #6c757d;
+}
+
+.page-header .page-title {
+    font-weight: 600;
+}
+
+/* ========================= */
+/* Badges específicas        */
+/* ========================= */
+
+.badge {
+    font-size: 0.75rem;
+    padding: 0.35em 0.6em;
+    border-radius: 999px;
+}
+
+    /* Secundaria: "Disponible", etc. */
+    .badge.bg-secondary {
+        background-color: #6c757d !important;
+        color: #fff !important;
+    }
+
+    /* Éxito: "Completado", etc. */
+    .badge.bg-success {
+        background-color: #198754 !important;
+        color: #fff !important;
+    }

@@ -1,48 +1,63 @@
-﻿/* Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-for details on configuring this project to bundle and minify static web assets. */
-
-a.navbar-brand {
-  white-space: normal;
-  text-align: center;
-  word-break: break-all;
+﻿:root {
+    --utec-primary: #5D0A28;
+    --utec-primary-dark: #4a071f;
+    --utec-light-bg: #F8F9FA;
+    --utec-footer-bg: #343A40;
+    --utec-footer-text: #F8F9FA;
 }
 
-a {
-  color: #0077cc;
+/* Sidebar vertical (navbar-vertical de Tabler) */
+.navbar.navbar-vertical {
+    background-color: var(--utec-primary);
 }
 
-.btn-primary {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
+    /* Texto e iconos del sidebar */
+    .navbar.navbar-vertical .navbar-brand,
+    .navbar.navbar-vertical .navbar-brand a,
+    .navbar.navbar-vertical .nav-link,
+    .navbar.navbar-vertical .nav-link .nav-link-title,
+    .navbar.navbar-vertical .nav-link .nav-link-icon,
+    .navbar.navbar-vertical .navbar-nav .nav-link {
+        color: #f8f9fa;
+    }
+
+        /* Hover / activo en el menú lateral */
+        .navbar.navbar-vertical .nav-link:hover,
+        .navbar.navbar-vertical .nav-link.active {
+            background-color: rgba(248, 249, 250, 0.12);
+            color: #ffffff;
+        }
+
+            .navbar.navbar-vertical .nav-link.active .nav-link-title {
+                font-weight: 600;
+            }
+
+/* Top bar (barra de usuario) */
+.page-wrapper > .navbar {
+    background-color: #ffffff;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
-  color: #fff;
-  background-color: #1b6ec2;
-  border-color: #1861ac;
+/* Fondo del contenido principal */
+.page-wrapper {
+    background-color: var(--utec-light-bg);
 }
 
-.border-top {
-  border-top: 1px solid #e5e5e5;
-}
-.border-bottom {
-  border-bottom: 1px solid #e5e5e5;
-}
-
-.box-shadow {
-  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
-}
-
-button.accept-policy {
-  font-size: 1rem;
-  line-height: inherit;
-}
-
+/* Footer */
 .footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  white-space: nowrap;
-  line-height: 60px;
+    background-color: var(--utec-footer-bg);
+    color: var(--utec-footer-text);
 }
+
+    .footer a {
+        color: var(--utec-footer-text);
+    }
+
+        .footer a:hover {
+            color: #ffffff;
+        }
+
+    /* Altura mínima para que no se vea aplastado */
+    .footer .row {
+        min-height: 3rem;
+    }

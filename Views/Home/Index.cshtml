@@ -30,6 +30,7 @@
 }
 else if (User.IsInRole("Admin"))
 {
+    <!-- Métricas principales Admin -->
     <div class="row mb-4">
         <div class="col-md-3 mb-3">
             <div class="card h-100">
@@ -72,15 +73,51 @@ else if (User.IsInRole("Admin"))
         </div>
     </div>
 
-    <!-- Card con gráfica ApexCharts (demo) -->
+    <!-- Charts Admin fila 1 -->
     <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
+        <div class="col-12 col-lg-6 mb-3">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h3 class="card-title">Usuarios por rol (demo)</h3>
+                </div>
+                <div class="card-body">
+                    <div id="admin-users-by-role-chart"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-6 mb-3">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h3 class="card-title">Inscripciones por estado (demo)</h3>
+                </div>
+                <div class="card-body">
+                    <div id="admin-enrollments-status-chart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Admin fila 2 -->
+    <div class="row mb-4">
+        <div class="col-12 col-lg-6 mb-3">
+            <div class="card h-100">
                 <div class="card-header">
                     <h3 class="card-title">Inscripciones por curso (demo)</h3>
                 </div>
                 <div class="card-body">
-                    <div id="admin-enrollments-chart"></div>
+                    <div id="admin-enrollments-per-course-chart"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-6 mb-3">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h3 class="card-title">Inscripciones por mes (demo)</h3>
+                </div>
+                <div class="card-body">
+                    <div id="admin-enrollments-by-month-chart"></div>
                 </div>
             </div>
         </div>
@@ -107,6 +144,7 @@ else if (User.IsInRole("Instructor"))
     <h2 class="mb-4">Panel del Instructor</h2>
     <p class="text-muted">Resumen de tus cursos y el avance de tus estudiantes.</p>
 
+    <!-- Métricas principales Instructor -->
     <div class="row mb-4">
         <div class="col-md-3 mb-3">
             <div class="card h-100">
@@ -149,6 +187,56 @@ else if (User.IsInRole("Instructor"))
         </div>
     </div>
 
+    <!-- Charts Instructor fila 1 -->
+    <div class="row mb-4">
+        <div class="col-12 col-lg-6 mb-3">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h3 class="card-title">Inscripciones por curso (demo)</h3>
+                </div>
+                <div class="card-body">
+                    <div id="instructor-enrollments-per-course-chart"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-6 mb-3">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h3 class="card-title">Inscripciones por estado (demo)</h3>
+                </div>
+                <div class="card-body">
+                    <div id="instructor-enrollments-status-chart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Instructor fila 2 -->
+    <div class="row mb-4">
+        <div class="col-12 col-lg-6 mb-3">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h3 class="card-title">% de finalización por curso (demo)</h3>
+                </div>
+                <div class="card-body">
+                    <div id="instructor-completion-per-course-chart"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-6 mb-3">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h3 class="card-title">Inscripciones por mes (demo)</h3>
+                </div>
+                <div class="card-body">
+                    <div id="instructor-enrollments-by-month-chart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <h4>Acciones rápidas</h4>
     <div class="list-group mb-3">
         <a asp-controller="Courses" asp-action="Index" class="list-group-item list-group-item-action">
@@ -164,6 +252,7 @@ else if (User.IsInRole("Student"))
     <h3 class="mb-3">Panel de estudiante</h3>
     <p class="text-muted">Resumen de tu avance en los cursos extracurriculares.</p>
 
+    <!-- Métricas principales Student -->
     <div class="row mb-4">
         <div class="col-md-3 mb-3">
             <div class="card h-100">
@@ -208,6 +297,31 @@ else if (User.IsInRole("Student"))
         </div>
     </div>
 
+    <!-- Charts Student -->
+    <div class="row mb-4">
+        <div class="col-12 col-lg-6 mb-3">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h3 class="card-title">Estado de mis cursos (demo)</h3>
+                </div>
+                <div class="card-body">
+                    <div id="student-courses-status-chart"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-6 mb-3">
+            <div class="card h-100">
+                <div class="card-header">
+                    <h3 class="card-title">Progreso global de lecciones (demo)</h3>
+                </div>
+                <div class="card-body">
+                    <div id="student-lessons-progress-chart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <h4>Acciones rápidas</h4>
     <div class="row">
         <div class="col-md-6 mb-3">
@@ -245,4 +359,6 @@ else
 
 @section Scripts {
     <script src="~/js/dashboard-admin.js" asp-append-version="true"></script>
+    <script src="~/js/dashboard-instructor.js" asp-append-version="true"></script>
+    <script src="~/js/dashboard-student.js" asp-append-version="true"></script>
 }
