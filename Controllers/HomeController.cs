@@ -22,13 +22,16 @@ namespace SIGECES.Controllers
         public async Task<IActionResult> Index()
         {
             // ======================
-            // Admin: KPIs globales
+            // Admin: KPIs + charts
             // ======================
             if (User.IsInRole("Admin"))
             {
+                // --- KPIs globales ---
                 var totalUsers = await _context.Users.CountAsync();
-                var totalStudents = await _context.Users.CountAsync(u => u.Role == UserRole.Student && u.IsActive);
-                var totalInstructors = await _context.Users.CountAsync(u => u.Role == UserRole.Instructor && u.IsActive);
+                var totalStudents = await _context.Users
+                    .CountAsync(u => u.Role == UserRole.Student && u.IsActive);
+                var totalInstructors = await _context.Users
+                    .CountAsync(u => u.Role == UserRole.Instructor && u.IsActive);
 
                 var totalCourses = await _context.Courses.CountAsync();
                 var activeCourses = await _context.Courses.CountAsync(c => c.IsActive);
@@ -50,77 +53,101 @@ namespace SIGECES.Controllers
                 ViewBag.CompletedEnrollments = completedEnrollments;
                 ViewBag.GlobalCompletionPercent = completionPercent;
 
-                // ============
-                // Charts Admin
-                // ============
-
-                // 1) Usuarios por rol (Admins / Instructores / Estudiantes)
+                // --- Chart 1: Usuarios por rol ---
                 var adminCount = await _context.Users
                     .CountAsync(u => u.Role == UserRole.Admin && u.IsActive);
+                var instructorCount = totalInstructors;
+                var studentCount = totalStudents;
 
-                var usersByRoleSeries = new[] { adminCount, totalInstructors, totalStudents };
-                var usersByRoleLabels = new[] { "Admins", "Instructores", "Estudiantes" };
+                ViewBag.AdminUsersByRoleSeries = JsonSerializer.Serialize(new[]
+                {
+                    adminCount,
+                    instructorCount,
+                    studentCount
+                });
 
-                ViewBag.AdminUsersByRoleSeries = JsonSerializer.Serialize(usersByRoleSeries);
-                ViewBag.AdminUsersByRoleLabels = JsonSerializer.Serialize(usersByRoleLabels);
+                ViewBag.AdminUsersByRoleLabels = JsonSerializer.Serialize(new[]
+                {
+                    "Admins",
+                    "Instructores",
+                    "Estudiantes"
+                });
 
-                // 2) Inscripciones por estado (En progreso / Completadas)
-                var inProgressEnrollments = await _context.Enrollments
+                // --- Chart 2: Inscripciones por estado ---
+                var adminInProgress = await _context.Enrollments
                     .CountAsync(e => e.Status == EnrollmentStatus.InProgress);
 
-                var enrollmentsStatusSeries = new[] { inProgressEnrollments, completedEnrollments };
-                var enrollmentsStatusLabels = new[] { "En progreso", "Completadas" };
+                ViewBag.AdminEnrollmentsStatusSeries = JsonSerializer.Serialize(new[]
+                {
+                    adminInProgress,
+                    completedEnrollments
+                });
 
-                ViewBag.AdminEnrollmentsStatusSeries = JsonSerializer.Serialize(enrollmentsStatusSeries);
-                ViewBag.AdminEnrollmentsStatusLabels = JsonSerializer.Serialize(enrollmentsStatusLabels);
+                ViewBag.AdminEnrollmentsStatusLabels = JsonSerializer.Serialize(new[]
+                {
+                    "En progreso",
+                    "Completadas"
+                });
 
-                // 3) Inscripciones por curso (top 6)
+                // --- Chart 3: Inscripciones por curso ---
                 var enrollmentsPerCourse = await _context.Enrollments
                     .Include(e => e.Course)
                     .Where(e => e.Course != null)
                     .GroupBy(e => e.Course!.Title)
-                    .Select(g => new { CourseTitle = g.Key, Count = g.Count() })
-                    .OrderByDescending(x => x.Count)
+                    .OrderByDescending(g => g.Count())
                     .Take(6)
+                    .Select(g => new
+                    {
+                        CourseTitle = g.Key,
+                        Count = g.Count()
+                    })
                     .ToListAsync();
 
-                ViewBag.AdminEnrollmentsPerCourseCategories = JsonSerializer.Serialize(
-                    enrollmentsPerCourse.Select(x => x.CourseTitle).ToArray()
-                );
-                ViewBag.AdminEnrollmentsPerCourseSeries = JsonSerializer.Serialize(
-                    enrollmentsPerCourse.Select(x => x.Count).ToArray()
-                );
+                ViewBag.AdminEnrollmentsPerCourseSeries =
+                    JsonSerializer.Serialize(enrollmentsPerCourse.Select(x => x.Count));
 
-                // 4) Inscripciones por mes (últimos 6 meses)
-                var monthNames = new[] { "Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic" };
+                ViewBag.AdminEnrollmentsPerCourseCategories =
+                    JsonSerializer.Serialize(enrollmentsPerCourse.Select(x => x.CourseTitle));
+
+                // --- Chart 4: Inscripciones por mes ---
+                // Últimos 6 meses (incluyendo el actual)
                 var now = DateTime.UtcNow;
-                var startMonth = new DateTime(now.Year, now.Month, 1).AddMonths(-5);
+                var firstMonth = new DateTime(now.Year, now.Month, 1).AddMonths(-5); // hace 5 meses
+                string[] monthShortNames = { "Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic" };
 
-                var rawMonthlyAdmin = await _context.Enrollments
-                    .Where(e => e.EnrolledAt >= startMonth)
+                var rawAdminMonthly = await _context.Enrollments
+                    .Where(e => e.EnrolledAt >= firstMonth)
                     .GroupBy(e => new { e.EnrolledAt.Year, e.EnrolledAt.Month })
-                    .Select(g => new { g.Key.Year, g.Key.Month, Count = g.Count() })
+                    .Select(g => new
+                    {
+                        g.Key.Year,
+                        g.Key.Month,
+                        Count = g.Count()
+                    })
                     .ToListAsync();
 
-                var adminMonthsLabels = new List<string>();
-                var adminMonthsSeries = new List<int>();
+                var adminMonthlySeries = new List<int>();
+                var adminMonthlyCategories = new List<string>();
 
+                // Construimos 6 meses seguidos (aunque no haya datos, ponemos 0)
                 for (int i = 0; i < 6; i++)
                 {
-                    var monthDate = startMonth.AddMonths(i);
-                    var label = monthNames[monthDate.Month - 1];
-                    var match = rawMonthlyAdmin
-                        .FirstOrDefault(x => x.Year == monthDate.Year && x.Month == monthDate.Month);
+                    var monthDate = firstMonth.AddMonths(i);
+                    var match = rawAdminMonthly.FirstOrDefault(x =>
+                        x.Year == monthDate.Year && x.Month == monthDate.Month);
 
-                    adminMonthsLabels.Add(label);
-                    adminMonthsSeries.Add(match?.Count ?? 0);
+                    adminMonthlySeries.Add(match?.Count ?? 0);
+                    adminMonthlyCategories.Add(monthShortNames[monthDate.Month - 1]);
                 }
 
-                ViewBag.AdminEnrollmentsByMonthCategories = JsonSerializer.Serialize(adminMonthsLabels);
-                ViewBag.AdminEnrollmentsByMonthSeries = JsonSerializer.Serialize(adminMonthsSeries);
+                ViewBag.AdminEnrollmentsByMonthSeries =
+                    JsonSerializer.Serialize(adminMonthlySeries);
+
+                ViewBag.AdminEnrollmentsByMonthCategories =
+                    JsonSerializer.Serialize(adminMonthlyCategories);
             }
             // ===========================
-            // Instructor: KPIs personales
+            // Instructor: KPIs + charts
             // ===========================
             else if (User.IsInRole("Instructor"))
             {
@@ -153,113 +180,125 @@ namespace SIGECES.Controllers
                     ViewBag.MyCompletedEnrollments = myCompletedEnrollments;
                     ViewBag.MyCompletionPercent = myCompletionPercent;
 
-                    // ============
-                    // Charts Instructor
-                    // ============
-
-                    // 1) Inscripciones por curso (top 6)
+                    // --- Chart 1: Inscripciones por curso ---
                     var instructorEnrollmentsPerCourse = await myEnrollmentsQuery
                         .Include(e => e.Course)
                         .Where(e => e.Course != null)
                         .GroupBy(e => e.Course!.Title)
-                        .Select(g => new { CourseTitle = g.Key, Count = g.Count() })
-                        .OrderByDescending(x => x.Count)
-                        .Take(6)
+                        .OrderByDescending(g => g.Count())
+                        .Select(g => new
+                        {
+                            CourseTitle = g.Key,
+                            Count = g.Count()
+                        })
                         .ToListAsync();
 
-                    ViewBag.InstructorEnrollmentsPerCourseCategories = JsonSerializer.Serialize(
-                        instructorEnrollmentsPerCourse.Select(x => x.CourseTitle).ToArray()
-                    );
-                    ViewBag.InstructorEnrollmentsPerCourseSeries = JsonSerializer.Serialize(
-                        instructorEnrollmentsPerCourse.Select(x => x.Count).ToArray()
-                    );
+                    ViewBag.InstructorEnrollmentsPerCourseSeries =
+                        JsonSerializer.Serialize(instructorEnrollmentsPerCourse.Select(x => x.Count));
 
-                    // 2) Inscripciones por estado (En progreso / Completadas)
-                    var instructorInProgress = await myEnrollmentsQuery
+                    ViewBag.InstructorEnrollmentsPerCourseCategories =
+                        JsonSerializer.Serialize(instructorEnrollmentsPerCourse.Select(x => x.CourseTitle));
+
+                    // --- Chart 2: Inscripciones por estado ---
+                    var myInProgressEnrollments = await myEnrollmentsQuery
                         .CountAsync(e => e.Status == EnrollmentStatus.InProgress);
-                    var instructorCompleted = await myEnrollmentsQuery
-                        .CountAsync(e => e.Status == EnrollmentStatus.Completed);
 
-                    ViewBag.InstructorEnrollmentsStatusSeries = JsonSerializer.Serialize(
-                        new[] { instructorInProgress, instructorCompleted }
-                    );
-                    ViewBag.InstructorEnrollmentsStatusLabels = JsonSerializer.Serialize(
-                        new[] { "En progreso", "Completadas" }
-                    );
+                    ViewBag.InstructorEnrollmentsStatusSeries =
+                        JsonSerializer.Serialize(new[]
+                        {
+                            myInProgressEnrollments,
+                            myCompletedEnrollments
+                        });
 
-                    // 3) % de finalización por curso
-                    var completionPerCourseLabels = new List<string>();
-                    var completionPerCourseSeries = new List<int>();
+                    ViewBag.InstructorEnrollmentsStatusLabels =
+                        JsonSerializer.Serialize(new[]
+                        {
+                            "En progreso",
+                            "Completadas"
+                        });
 
-                    foreach (var course in myCourses)
-                    {
-                        var totalCourseEnrollments = course.Enrollments?.Count ?? 0;
-                        var completedCourseEnrollments = course.Enrollments?
-                            .Count(e => e.Status == EnrollmentStatus.Completed) ?? 0;
+                    // --- Chart 3: % finalización por curso ---
+                    var completionPerCourse = myCourses
+                        .Select(c =>
+                        {
+                            var total = c.Enrollments?.Count ?? 0;
+                            var completed = c.Enrollments?
+                                .Count(e => e.Status == EnrollmentStatus.Completed) ?? 0;
 
-                        int coursePercent = totalCourseEnrollments == 0
-                            ? 0
-                            : (completedCourseEnrollments * 100 / totalCourseEnrollments);
+                            int percent = total == 0
+                                ? 0
+                                : (int)Math.Round(completed * 100.0 / total);
 
-                        completionPerCourseLabels.Add(course.Title);
-                        completionPerCourseSeries.Add(coursePercent);
-                    }
+                            return new
+                            {
+                                CourseTitle = c.Title,
+                                CompletionPercent = percent
+                            };
+                        })
+                        .OrderByDescending(x => x.CompletionPercent)
+                        .ToList();
+
+                    ViewBag.InstructorCompletionPerCourseSeries =
+                        JsonSerializer.Serialize(completionPerCourse.Select(x => x.CompletionPercent));
 
                     ViewBag.InstructorCompletionPerCourseCategories =
-                        JsonSerializer.Serialize(completionPerCourseLabels);
-                    ViewBag.InstructorCompletionPerCourseSeries =
-                        JsonSerializer.Serialize(completionPerCourseSeries);
+                        JsonSerializer.Serialize(completionPerCourse.Select(x => x.CourseTitle));
 
-                    // 4) Inscripciones por mes (últimos 6 meses) para este instructor
-                    var monthNamesInst = new[] { "Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic" };
-                    var nowInst = DateTime.UtcNow;
-                    var startMonthInst = new DateTime(nowInst.Year, nowInst.Month, 1).AddMonths(-5);
+                    // --- Chart 4: Inscripciones por mes (solo mis cursos) ---
+                    var now = DateTime.UtcNow;
+                    var firstMonth = new DateTime(now.Year, now.Month, 1).AddMonths(-5);
+                    string[] monthShortNames = { "Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic" };
 
-                    var rawMonthlyInstructor = await myEnrollmentsQuery
-                        .Where(e => e.EnrolledAt >= startMonthInst)
+                    var rawInstructorMonthly = await myEnrollmentsQuery
+                        .Where(e => e.EnrolledAt >= firstMonth)
                         .GroupBy(e => new { e.EnrolledAt.Year, e.EnrolledAt.Month })
-                        .Select(g => new { g.Key.Year, g.Key.Month, Count = g.Count() })
+                        .Select(g => new
+                        {
+                            g.Key.Year,
+                            g.Key.Month,
+                            Count = g.Count()
+                        })
                         .ToListAsync();
 
-                    var instructorMonthsLabels = new List<string>();
-                    var instructorMonthsSeries = new List<int>();
+                    var instructorMonthlySeries = new List<int>();
+                    var instructorMonthlyCategories = new List<string>();
 
                     for (int i = 0; i < 6; i++)
                     {
-                        var monthDate = startMonthInst.AddMonths(i);
-                        var label = monthNamesInst[monthDate.Month - 1];
-                        var match = rawMonthlyInstructor
-                            .FirstOrDefault(x => x.Year == monthDate.Year && x.Month == monthDate.Month);
+                        var monthDate = firstMonth.AddMonths(i);
+                        var match = rawInstructorMonthly.FirstOrDefault(x =>
+                            x.Year == monthDate.Year && x.Month == monthDate.Month);
 
-                        instructorMonthsLabels.Add(label);
-                        instructorMonthsSeries.Add(match?.Count ?? 0);
+                        instructorMonthlySeries.Add(match?.Count ?? 0);
+                        instructorMonthlyCategories.Add(monthShortNames[monthDate.Month - 1]);
                     }
 
-                    ViewBag.InstructorEnrollmentsByMonthCategories =
-                        JsonSerializer.Serialize(instructorMonthsLabels);
                     ViewBag.InstructorEnrollmentsByMonthSeries =
-                        JsonSerializer.Serialize(instructorMonthsSeries);
+                        JsonSerializer.Serialize(instructorMonthlySeries);
+
+                    ViewBag.InstructorEnrollmentsByMonthCategories =
+                        JsonSerializer.Serialize(instructorMonthlyCategories);
                 }
             }
             // ==========================
-            // Student: dashboard propio
+            // Student: KPIs + charts
             // ==========================
             else if (User.IsInRole("Student"))
             {
                 var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 if (int.TryParse(userIdStr, out int studentId))
                 {
-                    // Todas sus inscripciones
                     var myEnrollments = await _context.Enrollments
                         .Include(e => e.Course)
                         .Where(e => e.StudentId == studentId)
                         .ToListAsync();
 
                     int myTotalEnrollments = myEnrollments.Count;
-                    int myInProgress = myEnrollments.Count(e => e.Status == EnrollmentStatus.InProgress);
-                    int myCompleted = myEnrollments.Count(e => e.Status == EnrollmentStatus.Completed);
+                    int myInProgress = myEnrollments
+                        .Count(e => e.Status == EnrollmentStatus.InProgress);
+                    int myCompleted = myEnrollments
+                        .Count(e => e.Status == EnrollmentStatus.Completed);
 
-                    // Cursos activos en los que está inscrito
                     var myActiveCourseIds = myEnrollments
                         .Where(e => e.Course != null && e.Course.IsActive)
                         .Select(e => e.CourseId)
@@ -278,7 +317,8 @@ namespace SIGECES.Controllers
 
                         completedLessons = await _context.LessonProgresses
                             .Where(lp => lp.StudentId == studentId
-                                         && myActiveCourseIds.Contains(lp.Lesson!.CourseId))
+                                         && lp.Lesson != null
+                                         && myActiveCourseIds.Contains(lp.Lesson.CourseId))
                             .CountAsync();
 
                         lessonsPercent = totalLessons == 0
@@ -293,22 +333,16 @@ namespace SIGECES.Controllers
                     ViewBag.MyCompletedLessons_Student = completedLessons;
                     ViewBag.MyLessonsCompletionPercent_Student = lessonsPercent;
 
-                    // ============
-                    // Charts Student
-                    // ============
+                    // --- Chart 1: Estado de mis cursos ---
+                    ViewBag.StudentCoursesStatusSeries =
+                        JsonSerializer.Serialize(new[] { myInProgress, myCompleted });
 
-                    // 1) Estado de mis cursos (En progreso / Completados)
-                    ViewBag.StudentCoursesStatusSeries = JsonSerializer.Serialize(
-                        new[] { myInProgress, myCompleted }
-                    );
-                    ViewBag.StudentCoursesStatusLabels = JsonSerializer.Serialize(
-                        new[] { "En progreso", "Completados" }
-                    );
+                    ViewBag.StudentCoursesStatusLabels =
+                        JsonSerializer.Serialize(new[] { "En progreso", "Completados" });
 
-                    // 2) Progreso global de lecciones (radial)
-                    ViewBag.StudentLessonsProgressSeries = JsonSerializer.Serialize(
-                        new[] { lessonsPercent }
-                    );
+                    // --- Chart 2: Progreso global de lecciones ---
+                    ViewBag.StudentLessonsProgressSeries =
+                        JsonSerializer.Serialize(new[] { lessonsPercent });
                 }
             }
 
@@ -323,7 +357,10 @@ namespace SIGECES.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View(new ErrorViewModel
+            {
+                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+            });
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Linq;
+using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -50,10 +51,14 @@ namespace SIGECES.Controllers
                 );
             }
 
-            var bytes = Encoding.UTF8.GetBytes(sb.ToString());
+            var content = sb.ToString();
+            var bytes = Encoding.UTF8.GetPreamble()
+                .Concat(Encoding.UTF8.GetBytes(content))
+                .ToArray();
+
             var fileName = $"usuarios_{DateTime.UtcNow:yyyyMMddHHmmss}.csv";
 
-            return File(bytes, "text/csv", fileName);
+            return File(bytes, "text/csv; charset=utf-8", fileName);
         }
 
         // ==============
@@ -87,10 +92,14 @@ namespace SIGECES.Controllers
                 );
             }
 
-            var bytes = Encoding.UTF8.GetBytes(sb.ToString());
+            var content = sb.ToString();
+            var bytes = Encoding.UTF8.GetPreamble()
+                .Concat(Encoding.UTF8.GetBytes(content))
+                .ToArray();
+
             var fileName = $"cursos_{DateTime.UtcNow:yyyyMMddHHmmss}.csv";
 
-            return File(bytes, "text/csv", fileName);
+            return File(bytes, "text/csv; charset=utf-8", fileName);
         }
 
         // =================
@@ -123,10 +132,14 @@ namespace SIGECES.Controllers
                 );
             }
 
-            var bytes = Encoding.UTF8.GetBytes(sb.ToString());
+            var content = sb.ToString();
+            var bytes = Encoding.UTF8.GetPreamble()
+                .Concat(Encoding.UTF8.GetBytes(content))
+                .ToArray();
+
             var fileName = $"inscripciones_{DateTime.UtcNow:yyyyMMddHHmmss}.csv";
 
-            return File(bytes, "text/csv", fileName);
+            return File(bytes, "text/csv; charset=utf-8", fileName);
         }
     }
 }
