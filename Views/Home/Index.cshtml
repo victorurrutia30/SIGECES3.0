@@ -78,10 +78,13 @@ else if (User.IsInRole("Admin"))
         <div class="col-12 col-lg-6 mb-3">
             <div class="card h-100">
                 <div class="card-header">
-                    <h3 class="card-title">Usuarios por rol (demo)</h3>
+                    <h3 class="card-title">Usuarios por rol</h3>
                 </div>
                 <div class="card-body">
-                    <div id="admin-users-by-role-chart"></div>
+                    <div id="admin-users-by-role-chart"
+                         data-series='@Html.Raw(ViewBag.AdminUsersByRoleSeries ?? "[]")'
+                         data-labels='@Html.Raw(ViewBag.AdminUsersByRoleLabels ?? "[]")'>
+                    </div>
                 </div>
             </div>
         </div>
@@ -89,10 +92,13 @@ else if (User.IsInRole("Admin"))
         <div class="col-12 col-lg-6 mb-3">
             <div class="card h-100">
                 <div class="card-header">
-                    <h3 class="card-title">Inscripciones por estado (demo)</h3>
+                    <h3 class="card-title">Inscripciones por estado</h3>
                 </div>
                 <div class="card-body">
-                    <div id="admin-enrollments-status-chart"></div>
+                    <div id="admin-enrollments-status-chart"
+                         data-series='@Html.Raw(ViewBag.AdminEnrollmentsStatusSeries ?? "[]")'
+                         data-labels='@Html.Raw(ViewBag.AdminEnrollmentsStatusLabels ?? "[]")'>
+                    </div>
                 </div>
             </div>
         </div>
@@ -103,10 +109,13 @@ else if (User.IsInRole("Admin"))
         <div class="col-12 col-lg-6 mb-3">
             <div class="card h-100">
                 <div class="card-header">
-                    <h3 class="card-title">Inscripciones por curso (demo)</h3>
+                    <h3 class="card-title">Inscripciones por curso</h3>
                 </div>
                 <div class="card-body">
-                    <div id="admin-enrollments-per-course-chart"></div>
+                    <div id="admin-enrollments-per-course-chart"
+                         data-series='@Html.Raw(ViewBag.AdminEnrollmentsPerCourseSeries ?? "[]")'
+                         data-categories='@Html.Raw(ViewBag.AdminEnrollmentsPerCourseCategories ?? "[]")'>
+                    </div>
                 </div>
             </div>
         </div>
@@ -114,10 +123,13 @@ else if (User.IsInRole("Admin"))
         <div class="col-12 col-lg-6 mb-3">
             <div class="card h-100">
                 <div class="card-header">
-                    <h3 class="card-title">Inscripciones por mes (demo)</h3>
+                    <h3 class="card-title">Inscripciones por mes</h3>
                 </div>
                 <div class="card-body">
-                    <div id="admin-enrollments-by-month-chart"></div>
+                    <div id="admin-enrollments-by-month-chart"
+                         data-series='@Html.Raw(ViewBag.AdminEnrollmentsByMonthSeries ?? "[]")'
+                         data-categories='@Html.Raw(ViewBag.AdminEnrollmentsByMonthCategories ?? "[]")'>
+                    </div>
                 </div>
             </div>
         </div>
@@ -192,10 +204,13 @@ else if (User.IsInRole("Instructor"))
         <div class="col-12 col-lg-6 mb-3">
             <div class="card h-100">
                 <div class="card-header">
-                    <h3 class="card-title">Inscripciones por curso (demo)</h3>
+                    <h3 class="card-title">Inscripciones por curso</h3>
                 </div>
                 <div class="card-body">
-                    <div id="instructor-enrollments-per-course-chart"></div>
+                    <div id="instructor-enrollments-per-course-chart"
+                         data-series='@Html.Raw(ViewBag.InstructorEnrollmentsPerCourseSeries ?? "[]")'
+                         data-categories='@Html.Raw(ViewBag.InstructorEnrollmentsPerCourseCategories ?? "[]")'>
+                    </div>
                 </div>
             </div>
         </div>
@@ -203,10 +218,13 @@ else if (User.IsInRole("Instructor"))
         <div class="col-12 col-lg-6 mb-3">
             <div class="card h-100">
                 <div class="card-header">
-                    <h3 class="card-title">Inscripciones por estado (demo)</h3>
+                    <h3 class="card-title">Inscripciones por estado</h3>
                 </div>
                 <div class="card-body">
-                    <div id="instructor-enrollments-status-chart"></div>
+                    <div id="instructor-enrollments-status-chart"
+                         data-series='@Html.Raw(ViewBag.InstructorEnrollmentsStatusSeries ?? "[]")'
+                         data-labels='@Html.Raw(ViewBag.InstructorEnrollmentsStatusLabels ?? "[]")'>
+                    </div>
                 </div>
             </div>
         </div>
@@ -217,10 +235,13 @@ else if (User.IsInRole("Instructor"))
         <div class="col-12 col-lg-6 mb-3">
             <div class="card h-100">
                 <div class="card-header">
-                    <h3 class="card-title">% de finalización por curso (demo)</h3>
+                    <h3 class="card-title">% de finalización por curso</h3>
                 </div>
                 <div class="card-body">
-                    <div id="instructor-completion-per-course-chart"></div>
+                    <div id="instructor-completion-per-course-chart"
+                         data-series='@Html.Raw(ViewBag.InstructorCompletionPerCourseSeries ?? "[]")'
+                         data-categories='@Html.Raw(ViewBag.InstructorCompletionPerCourseCategories ?? "[]")'>
+                    </div>
                 </div>
             </div>
         </div>
@@ -228,10 +249,13 @@ else if (User.IsInRole("Instructor"))
         <div class="col-12 col-lg-6 mb-3">
             <div class="card h-100">
                 <div class="card-header">
-                    <h3 class="card-title">Inscripciones por mes (demo)</h3>
+                    <h3 class="card-title">Inscripciones por mes</h3>
                 </div>
                 <div class="card-body">
-                    <div id="instructor-enrollments-by-month-chart"></div>
+                    <div id="instructor-enrollments-by-month-chart"
+                         data-series='@Html.Raw(ViewBag.InstructorEnrollmentsByMonthSeries ?? "[]")'
+                         data-categories='@Html.Raw(ViewBag.InstructorEnrollmentsByMonthCategories ?? "[]")'>
+                    </div>
                 </div>
             </div>
         </div>
@@ -302,10 +326,13 @@ else if (User.IsInRole("Student"))
         <div class="col-12 col-lg-6 mb-3">
             <div class="card h-100">
                 <div class="card-header">
-                    <h3 class="card-title">Estado de mis cursos (demo)</h3>
+                    <h3 class="card-title">Estado de mis cursos</h3>
                 </div>
                 <div class="card-body">
-                    <div id="student-courses-status-chart"></div>
+                    <div id="student-courses-status-chart"
+                         data-series='@Html.Raw(ViewBag.StudentCoursesStatusSeries ?? "[]")'
+                         data-labels='@Html.Raw(ViewBag.StudentCoursesStatusLabels ?? "[]")'>
+                    </div>
                 </div>
             </div>
         </div>
@@ -313,10 +340,12 @@ else if (User.IsInRole("Student"))
         <div class="col-12 col-lg-6 mb-3">
             <div class="card h-100">
                 <div class="card-header">
-                    <h3 class="card-title">Progreso global de lecciones (demo)</h3>
+                    <h3 class="card-title">Progreso global de lecciones</h3>
                 </div>
                 <div class="card-body">
-                    <div id="student-lessons-progress-chart"></div>
+                    <div id="student-lessons-progress-chart"
+                         data-series='@Html.Raw(ViewBag.StudentLessonsProgressSeries ?? "[]")'>
+                    </div>
                 </div>
             </div>
         </div>
