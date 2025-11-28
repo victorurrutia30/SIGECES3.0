@@ -177,8 +177,43 @@ namespace SIGECES.Controllers
                 await _context.SaveChangesAsync();
             }
 
+            // 👉 Si ya completó TODAS las lecciones, marcar el curso como Completed
+            await UpdateEnrollmentStatusIfCourseCompleted(lesson.CourseId, studentId.Value);
+
             return RedirectToAction(nameof(Details), new { id = lesson.CourseId });
         }
+
+        private async Task UpdateEnrollmentStatusIfCourseCompleted(int courseId, int studentId)
+        {
+            // Total de lecciones del curso
+            var totalLessons = await _context.Lessons
+                .Where(l => l.CourseId == courseId)
+                .CountAsync();
+
+            if (totalLessons == 0)
+                return;
+
+            // Cuántas lecciones tiene marcadas como completadas este estudiante
+            var completedCount = await _context.LessonProgresses
+                .Where(lp => lp.StudentId == studentId && lp.Lesson!.CourseId == courseId)
+                .CountAsync();
+
+            // Si aún no ha completado todas, no hacemos nada
+            if (completedCount < totalLessons)
+                return;
+
+            // Buscar la inscripción
+            var enrollment = await _context.Enrollments
+                .FirstOrDefaultAsync(e => e.CourseId == courseId && e.StudentId == studentId);
+
+            if (enrollment == null || enrollment.Status == EnrollmentStatus.Completed)
+                return;
+
+            enrollment.Status = EnrollmentStatus.Completed;
+            await _context.SaveChangesAsync();
+        }
+
+
 
     }
 }

@@ -184,6 +184,7 @@ namespace SIGECES.Controllers
         // =========================
 
         // Lista de estudiantes inscritos en un curso
+        // Lista de estudiantes inscritos en un curso
         public async Task<IActionResult> Students(int id)
         {
             var course = await _context.Courses
@@ -197,8 +198,25 @@ namespace SIGECES.Controllers
             if (!UserCanManageCourse(course))
                 return Forbid();
 
+            // Total de lecciones del curso
+            var totalLessons = await _context.Lessons
+                .Where(l => l.CourseId == id)
+                .CountAsync();
+
+            // Progreso por estudiante (cuántas lecciones completadas)
+            var progressByStudent = await _context.LessonProgresses
+                .Where(lp => lp.Lesson!.CourseId == id)
+                .GroupBy(lp => lp.StudentId)
+                .Select(g => new { StudentId = g.Key, CompletedCount = g.Count() })
+                .ToListAsync();
+
+            ViewBag.TotalLessons = totalLessons;
+            ViewBag.CompletedByStudent = progressByStudent
+                .ToDictionary(x => x.StudentId, x => x.CompletedCount);
+
             return View(course);
         }
+
 
         // Agregar estudiante al curso POR CORREO
         [HttpPost]

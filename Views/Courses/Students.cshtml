@@ -1,7 +1,11 @@
-﻿@model SIGECES.Models.Course
+﻿@using System.Collections.Generic
+@model SIGECES.Models.Course
 
 @{
     ViewData["Title"] = $"Estudiantes de {Model.Title}";
+    int totalLessons = ViewBag.TotalLessons ?? 0;
+    var completedDict = ViewBag.CompletedByStudent as IDictionary<int, int>
+                        ?? new Dictionary<int, int>();
 }
 
 <h2>Estudiantes inscritos en "@Model.Title"</h2>
@@ -58,6 +62,7 @@ else
                 <th>Estudiante</th>
                 <th>Correo</th>
                 <th>Fecha inscripción</th>
+                <th>Progreso</th>
                 <th>Estado</th>
                 <th>Acciones</th>
             </tr>
@@ -69,6 +74,21 @@ else
                     <td>@e.Student!.FullName</td>
                     <td>@e.Student!.Email</td>
                     <td>@e.EnrolledAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
+
+                    <td>
+                        @{
+                            int completed = completedDict.ContainsKey(e.StudentId)
+                            ? completedDict[e.StudentId]
+                            : 0;
+
+                            int percent = totalLessons == 0
+                            ? 0
+                            : (completed * 100 / totalLessons);
+                        }
+
+                        @completed / @totalLessons (@percent%)
+                    </td>
+
                     <td>
                         <form asp-action="UpdateEnrollmentStatus" method="post" class="d-flex">
                             @Html.AntiForgeryToken()

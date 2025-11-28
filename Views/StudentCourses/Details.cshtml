@@ -2,14 +2,32 @@
 
 @{
     ViewData["Title"] = "Detalle del curso";
+
     bool isEnrolled = ViewBag.IsEnrolled ?? false;
-    SIGECES.Models.EnrollmentStatus? status = ViewBag.EnrollmentStatus as SIGECES.Models.EnrollmentStatus?;
+    SIGECES.Models.EnrollmentStatus? status = ViewBag.EnrollmentStatus;
 
     var completedLessonIds = ViewBag.CompletedLessonIds as List<int> ?? new List<int>();
 
     int total = Model.Lessons?.Count ?? 0;
     int completed = completedLessonIds.Count;
     int percent = total == 0 ? 0 : (completed * 100 / total);
+
+    string statusText = "No inscrito";
+    string statusClass = "bg-secondary";
+
+    if (isEnrolled)
+    {
+        if (status == SIGECES.Models.EnrollmentStatus.Completed)
+        {
+            statusText = "Completado";
+            statusClass = "bg-success";
+        }
+        else
+        {
+            statusText = "En progreso";
+            statusClass = "bg-warning";
+        }
+    }
 }
 
 <h2>@Model.Title</h2>
@@ -25,8 +43,8 @@
     <strong>Estado:</strong>
     @if (isEnrolled)
     {
-        <span class="badge bg-success">
-            Inscrito (@(status?.ToString() ?? "InProgress"))
+        <span class="badge @statusClass">
+            @statusText
         </span>
     }
     else
@@ -66,7 +84,17 @@
             <div class="border p-2 mb-2 d-flex justify-content-between align-items-center">
                 <div>
                     <strong>@lesson.Title</strong><br />
-                    <small>@lesson.Description</small>
+                    <small>@lesson.Description</small><br />
+
+                    @* 👉 Link al recurso de la lección, si existe *@
+                    @if (!string.IsNullOrWhiteSpace(lesson.ResourceUrl))
+                    {
+                        <a href="@lesson.ResourceUrl"
+                           target="_blank"
+                           rel="noopener noreferrer">
+                            Ver recurso
+                        </a>
+                    }
                 </div>
 
                 <div>
