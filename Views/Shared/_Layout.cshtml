@@ -46,7 +46,9 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Index">Usuarios</a>
                             </li>
-                            @* Más adelante podemos agregar: Categorías, reportes, etc. *@
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="AdminReports" asp-action="Index">Reportes</a>
+                            </li>
                         }
                         else if (User.IsInRole("Instructor"))
                         {

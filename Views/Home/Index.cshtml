@@ -25,16 +25,65 @@
 else if (User.IsInRole("Admin"))
 {
     <h3>Panel de administración</h3>
-    <p>Como administrador puedes gestionar usuarios, categorías y cursos.</p>
+    <p class="text-muted">Resumen rápido del estado de la plataforma.</p>
 
-    <ul>
-        <li>
-            <a asp-controller="Courses" asp-action="Index">Gestionar cursos</a>
-        </li>
-        <li>
-            (Opcional) En el futuro podrías agregar gestión de usuarios y categorías aquí.
-        </li>
-    </ul>
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Usuarios</h5>
+                    <p class="display-6">@ViewBag.TotalUsers</p>
+                    <p class="mb-0"><small>Estudiantes activos: @ViewBag.TotalStudents</small></p>
+                    <p class="mb-0"><small>Instructores activos: @ViewBag.TotalInstructors</small></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Cursos</h5>
+                    <p class="display-6">@ViewBag.TotalCourses</p>
+                    <p class="mb-0"><small>Activos: @ViewBag.ActiveCourses</small></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Inscripciones</h5>
+                    <p class="display-6">@ViewBag.TotalEnrollments</p>
+                    <p class="mb-0"><small>Completadas: @ViewBag.CompletedEnrollments</small></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card text-center h-100">
+                <div class="card-body">
+                    <h5 class="card-title">% Finalización global</h5>
+                    <p class="display-6">@ViewBag.GlobalCompletionPercent%</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h4>Accesos rápidos</h4>
+    <div class="list-group mb-3">
+        <a asp-controller="Courses" asp-action="Index" class="list-group-item list-group-item-action">
+            Gestionar cursos
+        </a>
+        <a asp-controller="CourseCategories" asp-action="Index" class="list-group-item list-group-item-action">
+            Categorías de cursos
+        </a>
+        <a asp-controller="Users" asp-action="Index" class="list-group-item list-group-item-action">
+            Usuarios
+        </a>
+        <a asp-controller="AdminReports" asp-action="Index" class="list-group-item list-group-item-action">
+            Reportes y exportaciones (CSV)
+        </a>
+    </div>
 }
 else if (User.IsInRole("Instructor"))
 {
