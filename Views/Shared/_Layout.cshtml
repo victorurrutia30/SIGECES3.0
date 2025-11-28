@@ -1,121 +1,235 @@
 ﻿@using System.Security.Claims
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>@ViewData["Title"] - SIGECES</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <!-- Tabler core CSS (incluye Bootstrap 5) -->
+    <link rel="stylesheet" href="https://unpkg.com/@@tabler/core@latest/dist/css/tabler.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/@@tabler/core@latest/dist/css/tabler-flags.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/@@tabler/core@latest/dist/css/tabler-payments.min.css" />
+    <link rel="stylesheet" href="https://unpkg.com/@@tabler/core@latest/dist/css/tabler-vendors.min.css" />
+
+    <!-- Iconos Tabler como webfont -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@tabler/icons-webfont@latest/tabler-icons.min.css" />
+
+    <!-- Estilos propios del sitio -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/SIGECES.styles.css" asp-append-version="true" />
+
+    @RenderSection("Styles", required: false)
 </head>
 <body>
-    <header>
-        @{
-            var isAuthenticated = User?.Identity?.IsAuthenticated == true;
-            var userName = isAuthenticated ? User.Identity!.Name : null;
-            var userRole = isAuthenticated ? User.FindFirst(ClaimTypes.Role)?.Value : null;
-        }
-
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+    @{
+        var isAuthenticated = User?.Identity?.IsAuthenticated == true;
+        var userName = isAuthenticated ? (User.FindFirst(ClaimTypes.Name)?.Value ?? User.Identity!.Name) : null;
+        var userRole = isAuthenticated ? User.FindFirst(ClaimTypes.Role)?.Value : null;
+    }
+    <div class="page">
+        <!-- Sidebar vertical principal -->
+        <aside class="navbar navbar-vertical navbar-expand-md navbar-dark">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">SIGECES</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
-                        aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar-menu"
+                        aria-controls="sidebar-menu" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    
-                    <ul class="navbar-nav flex-grow-1">
+                <h1 class="navbar-brand navbar-brand-autodark">
+                    <a asp-area="" asp-controller="Home" asp-action="Index">
+                        SIGECES
+                    </a>
+                </h1>
+
+                <!-- Zona compacta (mobile) -->
+                <div class="navbar-nav flex-row d-md-none">
+                    @if (isAuthenticated && !string.IsNullOrEmpty(userRole))
+                    {
+                        <span class="nav-link px-2">
+                            <span class="badge bg-primary-lt">@userRole</span>
+                        </span>
+                    }
+                    @if (!isAuthenticated)
+                    {
+                        <a class="nav-link px-2" asp-area="" asp-controller="Account" asp-action="Login">
+                            <i class="ti ti-login"></i>
+                        </a>
+                    }
+                </div>
+
+                <div class="collapse navbar-collapse" id="sidebar-menu">
+                    <ul class="navbar-nav pt-lg-3">
+                        <!-- Inicio: visible para todos -->
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">
+                                <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                    <i class="ti ti-home"></i>
+                                </span>
+                                <span class="nav-link-title">Inicio</span>
+                            </a>
                         </li>
 
                         @* Menú según rol *@
                         @if (User.IsInRole("Admin"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Courses" asp-action="Index">Cursos</a>
+                                <a class="nav-link" asp-area="" asp-controller="Courses" asp-action="Index">
+                                    <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                        <i class="ti ti-notes"></i>
+                                    </span>
+                                    <span class="nav-link-title">Cursos</span>
+                                </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="CourseCategories" asp-action="Index">Categorías</a>
+                                <a class="nav-link" asp-area="" asp-controller="CourseCategories" asp-action="Index">
+                                    <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                        <i class="ti ti-category"></i>
+                                    </span>
+                                    <span class="nav-link-title">Categorías</span>
+                                </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Users" asp-action="Index">Usuarios</a>
+                                <a class="nav-link" asp-area="" asp-controller="Users" asp-action="Index">
+                                    <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                        <i class="ti ti-users"></i>
+                                    </span>
+                                    <span class="nav-link-title">Usuarios</span>
+                                </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="AdminReports" asp-action="Index">Reportes</a>
+                                <a class="nav-link" asp-area="" asp-controller="AdminReports" asp-action="Index">
+                                    <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                        <i class="ti ti-report-analytics"></i>
+                                    </span>
+                                    <span class="nav-link-title">Reportes</span>
+                                </a>
                             </li>
                         }
                         else if (User.IsInRole("Instructor"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Courses" asp-action="Index">Mis cursos</a>
+                                <a class="nav-link" asp-area="" asp-controller="Courses" asp-action="Index">
+                                    <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                        <i class="ti ti-notes"></i>
+                                    </span>
+                                    <span class="nav-link-title">Mis cursos</span>
+                                </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="InstructorReports" asp-action="Index">Reportes</a>
+                                <a class="nav-link" asp-area="" asp-controller="InstructorReports" asp-action="Index">
+                                    <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                        <i class="ti ti-report-analytics"></i>
+                                    </span>
+                                    <span class="nav-link-title">Reportes</span>
+                                </a>
                             </li>
                         }
                         else if (User.IsInRole("Student"))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="StudentCourses" asp-action="Index">Catálogo</a>
+                                <a class="nav-link" asp-area="" asp-controller="StudentCourses" asp-action="Index">
+                                    <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                        <i class="ti ti-book"></i>
+                                    </span>
+                                    <span class="nav-link-title">Catálogo</span>
+                                </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="StudentCourses" asp-action="MyCourses">Mis cursos</a>
-                            </li>
-                        }
-
-                        @* Zona de usuario / login/logout *@
-                        @if (isAuthenticated)
-                        {
-                            <li class="nav-item ms-auto">
-                                <span class="navbar-text">
-                                    @userName (@userRole)
-                                </span>
-                            </li>
-                            <li class="nav-item">
-                                <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
-                                    @Html.AntiForgeryToken()
-                                    <button type="submit" class="nav-link btn btn-link text-dark px-2">
-                                        Cerrar sesión
-                                    </button>
-                                </form>
-                            </li>
-                        }
-                        else
-                        {
-                            <li class="nav-item ms-auto">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Login">
-                                    Iniciar sesión
+                                <a class="nav-link" asp-area="" asp-controller="StudentCourses" asp-action="MyCourses">
+                                    <span class="nav-link-icon d-md-none d-lg-inline-block">
+                                        <i class="ti ti-bookmark"></i>
+                                    </span>
+                                    <span class="nav-link-title">Mis cursos</span>
                                 </a>
                             </li>
                         }
                     </ul>
-
                 </div>
             </div>
-        </nav>
-    </header>
+        </aside>
 
+        <!-- Contenido principal -->
+        <div class="page-wrapper">
+            <!-- Barra superior (información de usuario) -->
+            <header class="navbar navbar-expand-md d-none d-md-flex d-print-none">
+                <div class="container-xl">
+                    <div class="navbar-nav flex-row order-md-last">
+                        @if (isAuthenticated)
+                        {
+                            <div class="nav-item dropdown d-none d-md-flex">
+                                <a href="#" class="nav-link d-flex lh-1 text-reset p-0" data-bs-toggle="dropdown"
+                                   aria-label="Open user menu">
+                                    <span class="avatar avatar-sm">
+                                        <i class="ti ti-user"></i>
+                                    </span>
+                                    <div class="d-none d-xl-block ps-2">
+                                        <div>@userName</div>
+                                        @if (!string.IsNullOrEmpty(userRole))
+                                        {
+                                            <div class="mt-1 small text-muted">@userRole</div>
+                                        }
+                                    </div>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                                    <form asp-area="" asp-controller="Account" asp-action="Logout" method="post" class="px-3">
+                                        <button type="submit" class="btn btn-outline-danger w-100">
+                                            Cerrar sesión
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <a class="btn btn-outline-primary" asp-area="" asp-controller="Account" asp-action="Login">
+                                Iniciar sesión
+                            </a>
+                        }
+                    </div>
+                </div>
+            </header>
 
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+            <!-- Cuerpo de página -->
+            <div class="page-body">
+                <div class="container-xl">
+                    @* Sección opcional para headers de página específicos *@
+                    @RenderSection("PageHeader", required: false)
+
+                    @RenderBody()
+                </div>
+            </div>
+
+            <footer class="footer footer-transparent d-print-none">
+                <div class="container-xl">
+                    <div class="row text-center align-items-center flex-row-reverse">
+                        <div class="col-lg-auto ms-lg-auto">
+                            &copy; @DateTime.Now.Year - SIGECES
+                        </div>
+                        <div class="col-12 col-lg-auto mt-3 mt-lg-0">
+                            <a asp-area="" asp-controller="Home" asp-action="Privacy" class="link-secondary">
+                                Privacy
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - SIGECES - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery global (para validación, DataTables, etc.) -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
+
+    <!-- ApexCharts global (para dashboards) -->
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts@latest"></script>
+
+    <!-- JS core de Tabler -->
+    <script src="https://unpkg.com/@@tabler/core@latest/dist/js/tabler.min.js" defer></script>
+
+    <!-- Scripts propios -->
     <script src="~/js/site.js" asp-append-version="true"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
