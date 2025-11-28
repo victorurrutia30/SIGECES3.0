@@ -1,0 +1,32 @@
+﻿@{
+    var success = TempData["SuccessMessage"] as string;
+    var error = TempData["ErrorMessage"] as string;
+}
+
+@if (!string.IsNullOrWhiteSpace(success))
+{
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            Swal.fire({
+                icon: 'success',
+                title: 'Éxito',
+                text: '@success',
+                confirmButtonText: 'Aceptar'
+            });
+        });
+    </script>
+}
+
+@if (!string.IsNullOrWhiteSpace(error))
+{
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            Swal.fire({
+                icon: 'error',
+                title: 'Ups...',
+                text: '@error',
+                confirmButtonText: 'Entendido'
+            });
+        });
+    </script>
+}
