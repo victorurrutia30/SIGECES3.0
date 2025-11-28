@@ -3,12 +3,18 @@
     var isAuthenticated = User?.Identity?.IsAuthenticated == true;
 }
 
-<div class="text-center">
-    <h1 class="display-4">SIGECES UTEC</h1>
-    <p class="lead">Sistema de gestión de cursos extracurriculares para estudiantes UTEC.</p>
+<div class="page-header d-print-none mb-3">
+    <div class="row align-items-center">
+        <div class="col">
+            <div class="page-pretitle">
+                SIGECES UTEC
+            </div>
+            <h2 class="page-title">
+                Sistema de gestión de cursos extracurriculares
+            </h2>
+        </div>
+    </div>
 </div>
-
-<hr />
 
 @if (!isAuthenticated)
 {
@@ -24,52 +30,63 @@
 }
 else if (User.IsInRole("Admin"))
 {
-    <h3>Panel de administración</h3>
-    <p class="text-muted">Resumen rápido del estado de la plataforma.</p>
-
     <div class="row mb-4">
         <div class="col-md-3 mb-3">
-            <div class="card text-center h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Usuarios</h5>
-                    <p class="display-6">@ViewBag.TotalUsers</p>
-                    <p class="mb-0"><small>Estudiantes activos: @ViewBag.TotalStudents</small></p>
-                    <p class="mb-0"><small>Instructores activos: @ViewBag.TotalInstructors</small></p>
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="text-muted mb-1">Usuarios</div>
+                    <div class="h1 mb-1">@ViewBag.TotalUsers</div>
+                    <div class="text-muted small">Estudiantes activos: @ViewBag.TotalStudents</div>
+                    <div class="text-muted small">Instructores activos: @ViewBag.TotalInstructors</div>
                 </div>
             </div>
         </div>
 
         <div class="col-md-3 mb-3">
-            <div class="card text-center h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Cursos</h5>
-                    <p class="display-6">@ViewBag.TotalCourses</p>
-                    <p class="mb-0"><small>Activos: @ViewBag.ActiveCourses</small></p>
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="text-muted mb-1">Cursos</div>
+                    <div class="h1 mb-1">@ViewBag.TotalCourses</div>
+                    <div class="text-muted small">Activos: @ViewBag.ActiveCourses</div>
                 </div>
             </div>
         </div>
 
         <div class="col-md-3 mb-3">
-            <div class="card text-center h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Inscripciones</h5>
-                    <p class="display-6">@ViewBag.TotalEnrollments</p>
-                    <p class="mb-0"><small>Completadas: @ViewBag.CompletedEnrollments</small></p>
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="text-muted mb-1">Inscripciones</div>
+                    <div class="h1 mb-1">@ViewBag.TotalEnrollments</div>
+                    <div class="text-muted small">Completadas: @ViewBag.CompletedEnrollments</div>
                 </div>
             </div>
         </div>
 
         <div class="col-md-3 mb-3">
-            <div class="card text-center h-100">
-                <div class="card-body">
-                    <h5 class="card-title">% Finalización global</h5>
-                    <p class="display-6">@ViewBag.GlobalCompletionPercent%</p>
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="text-muted mb-1">% Finalización global</div>
+                    <div class="h1 mb-1">@ViewBag.GlobalCompletionPercent%</div>
                 </div>
             </div>
         </div>
     </div>
 
-    <h4>Accesos rápidos</h4>
+    <!-- Card con gráfica ApexCharts (demo) -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Inscripciones por curso (demo)</h3>
+                </div>
+                <div class="card-body">
+                    <div id="admin-enrollments-chart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h4 class="mb-2">Accesos rápidos</h4>
     <div class="list-group mb-3">
         <a asp-controller="Courses" asp-action="Index" class="list-group-item list-group-item-action">
             Gestionar cursos
@@ -92,41 +109,41 @@ else if (User.IsInRole("Instructor"))
 
     <div class="row mb-4">
         <div class="col-md-3 mb-3">
-            <div class="card text-center h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Mis cursos</h5>
-                    <p class="display-6">@ViewBag.MyCoursesCount</p>
-                    <p class="mb-0"><small>Total creados</small></p>
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="text-muted mb-1">Mis cursos</div>
+                    <div class="h1 mb-1">@ViewBag.MyCoursesCount</div>
+                    <div class="text-muted small">Total creados</div>
                 </div>
             </div>
         </div>
 
         <div class="col-md-3 mb-3">
-            <div class="card text-center h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Cursos activos</h5>
-                    <p class="display-6">@ViewBag.MyActiveCourses</p>
-                    <p class="mb-0"><small>Visibles para estudiantes</small></p>
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="text-muted mb-1">Cursos activos</div>
+                    <div class="h1 mb-1">@ViewBag.MyActiveCourses</div>
+                    <div class="text-muted small">Visibles para estudiantes</div>
                 </div>
             </div>
         </div>
 
         <div class="col-md-3 mb-3">
-            <div class="card text-center h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Inscripciones</h5>
-                    <p class="display-6">@ViewBag.MyTotalEnrollments</p>
-                    <p class="mb-0"><small>En todos tus cursos</small></p>
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="text-muted mb-1">Inscripciones</div>
+                    <div class="h1 mb-1">@ViewBag.MyTotalEnrollments</div>
+                    <div class="text-muted small">En todos tus cursos</div>
                 </div>
             </div>
         </div>
 
         <div class="col-md-3 mb-3">
-            <div class="card text-center h-100">
-                <div class="card-body">
-                    <h5 class="card-title">% Finalización global</h5>
-                    <p class="display-6">@ViewBag.MyCompletionPercent%</p>
-                    <p class="mb-0"><small>Completados / inscritos</small></p>
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="text-muted mb-1">Finalización global</div>
+                    <div class="h1 mb-1">@ViewBag.MyCompletionPercent%</div>
+                    <div class="text-muted small">Completados / inscritos</div>
                 </div>
             </div>
         </div>
@@ -144,50 +161,48 @@ else if (User.IsInRole("Instructor"))
 }
 else if (User.IsInRole("Student"))
 {
-    <h3>Panel de estudiante</h3>
+    <h3 class="mb-3">Panel de estudiante</h3>
     <p class="text-muted">Resumen de tu avance en los cursos extracurriculares.</p>
 
     <div class="row mb-4">
         <div class="col-md-3 mb-3">
-            <div class="card text-center h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Cursos inscritos</h5>
-                    <p class="display-6">@ViewBag.MyTotalEnrollments_Student</p>
-                    <p class="mb-0"><small>Total de inscripciones</small></p>
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="text-muted mb-1">Cursos inscritos</div>
+                    <div class="h1 mb-1">@ViewBag.MyTotalEnrollments_Student</div>
+                    <div class="text-muted small">Total de inscripciones</div>
                 </div>
             </div>
         </div>
 
         <div class="col-md-3 mb-3">
-            <div class="card text-center h-100">
-                <div class="card-body">
-                    <h5 class="card-title">En progreso</h5>
-                    <p class="display-6">@ViewBag.MyInProgressEnrollments_Student</p>
-                    <p class="mb-0"><small>Cursos activos</small></p>
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="text-muted mb-1">En progreso</div>
+                    <div class="h1 mb-1">@ViewBag.MyInProgressEnrollments_Student</div>
+                    <div class="text-muted small">Cursos activos</div>
                 </div>
             </div>
         </div>
 
         <div class="col-md-3 mb-3">
-            <div class="card text-center h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Completados</h5>
-                    <p class="display-6">@ViewBag.MyCompletedEnrollments_Student</p>
-                    <p class="mb-0"><small>Cursos finalizados</small></p>
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="text-muted mb-1">Completados</div>
+                    <div class="h1 mb-1">@ViewBag.MyCompletedEnrollments_Student</div>
+                    <div class="text-muted small">Cursos finalizados</div>
                 </div>
             </div>
         </div>
 
         <div class="col-md-3 mb-3">
-            <div class="card text-center h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Avance en lecciones</h5>
-                    <p class="display-6">@ViewBag.MyLessonsCompletionPercent_Student%</p>
-                    <p class="mb-0">
-                        <small>
-                            @ViewBag.MyCompletedLessons_Student / @ViewBag.MyTotalLessons_Student lecciones
-                        </small>
-                    </p>
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <div class="text-muted mb-1">Avance en lecciones</div>
+                    <div class="h1 mb-1">@ViewBag.MyLessonsCompletionPercent_Student%</div>
+                    <div class="text-muted small">
+                        @ViewBag.MyCompletedLessons_Student / @ViewBag.MyTotalLessons_Student lecciones
+                    </div>
                 </div>
             </div>
         </div>
@@ -196,7 +211,7 @@ else if (User.IsInRole("Student"))
     <h4>Acciones rápidas</h4>
     <div class="row">
         <div class="col-md-6 mb-3">
-            <div class="card">
+            <div class="card h-100">
                 <div class="card-body">
                     <h5 class="card-title">Catálogo de cursos</h5>
                     <p class="card-text">
@@ -209,7 +224,7 @@ else if (User.IsInRole("Student"))
             </div>
         </div>
         <div class="col-md-6 mb-3">
-            <div class="card">
+            <div class="card h-100">
                 <div class="card-body">
                     <h5 class="card-title">Mis cursos</h5>
                     <p class="card-text">
@@ -226,4 +241,8 @@ else if (User.IsInRole("Student"))
 else
 {
     <p>No se pudo determinar tu rol. Contacta al administrador.</p>
+}
+
+@section Scripts {
+    <script src="~/js/dashboard-admin.js" asp-append-version="true"></script>
 }
