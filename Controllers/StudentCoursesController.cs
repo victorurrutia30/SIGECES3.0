@@ -57,6 +57,15 @@ namespace SIGECES.Controllers
                 .Include(c => c.Lessons)
                 .FirstOrDefaultAsync(c => c.Id == id && c.IsActive);
 
+            // Obtener progreso del estudiante
+            var completedLessonIds = await _context.LessonProgresses
+                .Where(lp => lp.StudentId == studentId.Value && lp.Lesson!.CourseId == id)
+                .Select(lp => lp.LessonId)
+                .ToListAsync();
+
+            ViewBag.CompletedLessonIds = completedLessonIds;
+
+
             if (course == null)
                 return NotFound();
 
@@ -129,5 +138,47 @@ namespace SIGECES.Controllers
 
             return null;
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CompleteLesson(int lessonId)
+        {
+            var studentId = GetCurrentUserId();
+            if (studentId == null)
+                return Unauthorized();
+
+            // Validar que la lección existe y pertenece a un curso activo
+            var lesson = await _context.Lessons
+                .Include(l => l.Course)
+                .FirstOrDefaultAsync(l => l.Id == lessonId);
+
+            if (lesson == null || lesson.Course == null || !lesson.Course.IsActive)
+                return NotFound();
+
+            // Validar inscripción del estudiante
+            bool enrolled = await _context.Enrollments
+                .AnyAsync(e => e.CourseId == lesson.CourseId && e.StudentId == studentId.Value);
+
+            if (!enrolled)
+                return Forbid();
+
+            // Ver si ya está completada
+            bool alreadyCompleted = await _context.LessonProgresses
+                .AnyAsync(lp => lp.LessonId == lessonId && lp.StudentId == studentId.Value);
+
+            if (!alreadyCompleted)
+            {
+                _context.LessonProgresses.Add(new LessonProgress
+                {
+                    LessonId = lessonId,
+                    StudentId = studentId.Value
+                });
+
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Details), new { id = lesson.CourseId });
+        }
+
     }
 }
