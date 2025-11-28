@@ -4,25 +4,58 @@
     ViewData["Title"] = "Eliminar lección";
 }
 
-<h2>Eliminar lección</h2>
+<div class="page-header d-print-none mb-3">
+    <div class="row align-items-center">
+        <div class="col">
+            <div class="page-pretitle">
+                Lecciones
+            </div>
+            <h2 class="page-title">
+                Eliminar lección
+            </h2>
+        </div>
+        <div class="col-auto ms-auto d-print-none">
+            <a asp-action="Manage"
+               asp-route-courseId="@Model.CourseId"
+               class="btn btn-outline-secondary">
+                <i class="ti ti-arrow-left me-1"></i>
+                Volver a lecciones
+            </a>
+        </div>
+    </div>
+</div>
 
-<h4>¿Seguro que deseas eliminar esta lección?</h4>
+<div class="card">
+    <div class="card-body">
+        <h4 class="mb-3">¿Seguro que deseas eliminar esta lección?</h4>
 
-<dl class="row">
-    <dt class="col-sm-2">Curso</dt>
-    <dd class="col-sm-10">@Model.Course?.Title</dd>
+        <dl class="row mb-4">
+            <dt class="col-sm-3">Curso</dt>
+            <dd class="col-sm-9">@Model.Course?.Title</dd>
 
-    <dt class="col-sm-2">Título</dt>
-    <dd class="col-sm-10">@Model.Title</dd>
+            <dt class="col-sm-3">Título</dt>
+            <dd class="col-sm-9">@Model.Title</dd>
 
-    <dt class="col-sm-2">Orden</dt>
-    <dd class="col-sm-10">@Model.Order</dd>
-</dl>
+            <dt class="col-sm-3">Orden</dt>
+            <dd class="col-sm-9">@Model.Order</dd>
+        </dl>
 
-<form asp-action="Delete" method="post"
-      data-confirm="¿Seguro que deseas eliminar esta lección? Esta acción no se puede deshacer.">
-    @Html.AntiForgeryToken()
-    <input type="hidden" asp-for="Id" />
-    <button type="submit" class="btn btn-danger">Eliminar</button>
-    <a asp-action="Manage" asp-route-courseId="@Model.CourseId" class="btn btn-secondary">Cancelar</a>
-</form>
+        <form asp-action="Delete" method="post"
+              data-confirm="¿Seguro que deseas eliminar esta lección? Esta acción no se puede deshacer.">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Id" />
+
+            <div class="d-flex justify-content-end gap-2">
+                <a asp-action="Manage"
+                   asp-route-courseId="@Model.CourseId"
+                   class="btn btn-outline-secondary">
+                    Cancelar
+                </a>
+                <button type="submit" class="btn btn-danger">
+                    <i class="ti ti-trash me-1"></i>
+                    Eliminar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -4,25 +4,56 @@
     ViewData["Title"] = "Desactivar categoría";
 }
 
-<h2>Desactivar categoría</h2>
+<div class="page-header d-print-none mb-3">
+    <div class="row align-items-center">
+        <div class="col">
+            <div class="page-pretitle">
+                Categorías
+            </div>
+            <h2 class="page-title">
+                Desactivar categoría
+            </h2>
+        </div>
+        <div class="col-auto ms-auto d-print-none">
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <i class="ti ti-arrow-left me-1"></i>
+                Volver a categorías
+            </a>
+        </div>
+    </div>
+</div>
 
-<p>¿Seguro que deseas desactivar esta categoría? Los cursos seguirán existiendo, pero la categoría se marcará como inactiva.</p>
+<div class="card">
+    <div class="card-body">
+        <p class="text-muted">
+            ¿Seguro que deseas desactivar esta categoría? Los cursos seguirán existiendo, pero la categoría se marcará como inactiva.
+        </p>
 
-<dl class="row">
-    <dt class="col-sm-2">Nombre</dt>
-    <dd class="col-sm-10">@Model.Name</dd>
+        <dl class="row mb-4">
+            <dt class="col-sm-3">Nombre</dt>
+            <dd class="col-sm-9">@Model.Name</dd>
 
-    <dt class="col-sm-2">Descripción</dt>
-    <dd class="col-sm-10">@Model.Description</dd>
+            <dt class="col-sm-3">Descripción</dt>
+            <dd class="col-sm-9">@Model.Description</dd>
 
-    <dt class="col-sm-2">Cursos asociados</dt>
-    <dd class="col-sm-10">@((Model.Courses?.Count()) ?? 0)</dd>
-</dl>
+            <dt class="col-sm-3">Cursos asociados</dt>
+            <dd class="col-sm-9">@((Model.Courses?.Count()) ?? 0)</dd>
+        </dl>
 
-<form asp-action="Delete" method="post"
-      data-confirm="¿Seguro que deseas desactivar esta categoría? Los cursos seguirán existiendo.">
-    @Html.AntiForgeryToken()
-    <input type="hidden" asp-for="Id" />
-    <button type="submit" class="btn btn-danger">Desactivar</button>
-    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
-</form>
+        <form asp-action="Delete" method="post"
+              data-confirm="¿Seguro que deseas desactivar esta categoría? Los cursos seguirán existiendo.">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Id" />
+
+            <div class="d-flex justify-content-end gap-2">
+                <a asp-action="Index" class="btn btn-outline-secondary">
+                    Cancelar
+                </a>
+                <button type="submit" class="btn btn-danger">
+                    <i class="ti ti-square-minus me-1"></i>
+                    Desactivar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

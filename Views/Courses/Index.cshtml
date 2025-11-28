@@ -2,40 +2,144 @@
 
 @{
     ViewData["Title"] = "Cursos";
+    var search = Context.Request.Query["q"].ToString();
+    var onlyActive = Context.Request.Query["onlyActive"].ToString() == "true";
 }
 
-<h2>Cursos</h2>
+<div class="page-header d-print-none mb-3">
+    <div class="row align-items-center">
+        <div class="col">
+            <div class="page-pretitle">
+                Catálogos
+            </div>
+            <h2 class="page-title">
+                Cursos
+            </h2>
+        </div>
+        <div class="col-auto ms-auto d-print-none">
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="ti ti-notes-plus me-1"></i>
+                Crear curso
+            </a>
+        </div>
+    </div>
+</div>
 
-<p>
-    <a asp-action="Create" class="btn btn-primary">Crear nuevo curso</a>
-</p>
+<div class="card">
+    <div class="card-header">
+        <form method="get" class="row g-2 w-100">
+            <div class="col-md-4">
+                <div class="input-icon">
+                    <span class="input-icon-addon">
+                        <i class="ti ti-search"></i>
+                    </span>
+                    <input type="text"
+                           name="q"
+                           value="@search"
+                           class="form-control"
+                           placeholder="Buscar por título o instructor..." />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label class="form-check mb-0 mt-1">
+                    <input type="checkbox"
+                           name="onlyActive"
+                           value="true"
+                           class="form-check-input"
+                           @(onlyActive ? "checked" : "") />
+                    <span class="form-check-label">
+                        Solo cursos activos
+                    </span>
+                </label>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-outline-secondary w-100">
+                    <i class="ti ti-filter me-1"></i>
+                    Filtrar
+                </button>
+            </div>
+        </form>
+    </div>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Título</th>
-            <th>Categoría</th>
-            <th>Instructor</th>
-            <th>Activo</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.Title</td>
-                <td>@item.Category?.Name</td>
-                <td>@item.Instructor?.FullName</td>
-                <td>@(item.IsActive ? "Sí" : "No")</td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Editar</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Eliminar</a> |
-                    <a asp-controller="Lessons" asp-action="Manage" asp-route-courseId="@item.Id">Lecciones</a> |
-                    <a asp-action="Students" asp-route-id="@item.Id">Estudiantes</a>
-                </td>
-
-            </tr>
-        }
-    </tbody>
-</table>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table card-table table-vcenter table-striped table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Título</th>
+                        <th>Categoría</th>
+                        <th>Instructor</th>
+                        <th class="text-center">Estado</th>
+                        <th class="w-1"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">
+                                No se encontraron cursos.
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.Title</td>
+                                <td class="text-muted">@item.Category?.Name</td>
+                                <td>@item.Instructor?.FullName</td>
+                                <td class="text-center">
+                                    @if (item.IsActive)
+                                    {
+                                        <span class="badge bg-success-lt">
+                                            <i class="ti ti-circle-check me-1"></i>
+                                            Activo
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary-lt">
+                                            <i class="ti ti-circle-dashed me-1"></i>
+                                            Inactivo
+                                        </span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    <div class="btn-list flex-nowrap">
+                                        <a asp-action="Edit"
+                                           asp-route-id="@item.Id"
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="ti ti-pencil me-1"></i>
+                                            Editar
+                                        </a>
+                                        <a asp-controller="Lessons"
+                                           asp-action="Manage"
+                                           asp-route-courseId="@item.Id"
+                                           class="btn btn-sm btn-outline-info">
+                                            <i class="ti ti-list-details me-1"></i>
+                                            Lecciones
+                                        </a>
+                                        <a asp-action="Students"
+                                           asp-route-id="@item.Id"
+                                           class="btn btn-sm btn-outline-secondary">
+                                            <i class="ti ti-users me-1"></i>
+                                            Estudiantes
+                                        </a>
+                                        <a asp-action="Delete"
+                                           asp-route-id="@item.Id"
+                                           class="btn btn-sm btn-outline-danger">
+                                            <i class="ti ti-trash me-1"></i>
+                                            Eliminar
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

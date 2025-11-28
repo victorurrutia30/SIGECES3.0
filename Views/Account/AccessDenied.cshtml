@@ -2,6 +2,38 @@
     ViewData["Title"] = "Acceso denegado";
 }
 
-<h2>@ViewData["Title"]</h2>
+<div class="page-header d-print-none mb-3">
+    <div class="row align-items-center">
+        <div class="col">
+            <div class="page-pretitle">
+                Seguridad
+            </div>
+            <h2 class="page-title">
+                Acceso denegado
+            </h2>
+        </div>
+    </div>
+</div>
 
-<p>No tienes permisos para acceder a este recurso.</p>
+<div class="card border-danger">
+    <div class="card-body d-flex">
+        <div class="me-3">
+            <span class="avatar avatar-lg bg-danger-lt">
+                <i class="ti ti-shield-x"></i>
+            </span>
+        </div>
+        <div>
+            <h3 class="card-title mb-2 text-danger">No tienes permisos</h3>
+            <p class="mb-1">
+                No cuentas con los permisos necesarios para acceder a este recurso.
+            </p>
+            <p class="text-muted mb-3">
+                Si crees que se trata de un error, contacta al administrador del sistema.
+            </p>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">
+                <i class="ti ti-arrow-left me-1"></i>
+                Volver al inicio
+            </a>
+        </div>
+    </div>
+</div>

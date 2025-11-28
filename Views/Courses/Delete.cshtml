@@ -4,27 +4,54 @@
     ViewData["Title"] = "Eliminar curso";
 }
 
-<h2>@ViewData["Title"]</h2>
-
-<h3>¿Seguro que deseas eliminar este curso?</h3>
-
-<div>
-    <dl class="row">
-        <dt class="col-sm-2">Título</dt>
-        <dd class="col-sm-10">@Model.Title</dd>
-
-        <dt class="col-sm-2">Categoría</dt>
-        <dd class="col-sm-10">@Model.Category?.Name</dd>
-
-        <dt class="col-sm-2">Instructor</dt>
-        <dd class="col-sm-10">@Model.Instructor?.FullName</dd>
-    </dl>
+<div class="page-header d-print-none mb-3">
+    <div class="row align-items-center">
+        <div class="col">
+            <div class="page-pretitle">
+                Cursos
+            </div>
+            <h2 class="page-title">
+                Eliminar curso
+            </h2>
+        </div>
+        <div class="col-auto ms-auto d-print-none">
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <i class="ti ti-arrow-left me-1"></i>
+                Volver a cursos
+            </a>
+        </div>
+    </div>
 </div>
 
-<form asp-action="Delete" method="post"
-      data-confirm="¿Seguro que deseas eliminar este curso? Esta acción no se puede deshacer.">
-    @Html.AntiForgeryToken()
-    <input type="hidden" asp-for="Id" />
-    <button type="submit" class="btn btn-danger">Eliminar</button>
-    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
-</form>
+<div class="card">
+    <div class="card-body">
+        <h4 class="mb-3">¿Seguro que deseas eliminar este curso?</h4>
+
+        <dl class="row mb-4">
+            <dt class="col-sm-3">Título</dt>
+            <dd class="col-sm-9">@Model.Title</dd>
+
+            <dt class="col-sm-3">Categoría</dt>
+            <dd class="col-sm-9">@Model.Category?.Name</dd>
+
+            <dt class="col-sm-3">Instructor</dt>
+            <dd class="col-sm-9">@Model.Instructor?.FullName</dd>
+        </dl>
+
+        <form asp-action="Delete" method="post"
+              data-confirm="¿Seguro que deseas eliminar este curso? Esta acción no se puede deshacer.">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Id" />
+
+            <div class="d-flex justify-content-end gap-2">
+                <a asp-action="Index" class="btn btn-outline-secondary">
+                    Cancelar
+                </a>
+                <button type="submit" class="btn btn-danger">
+                    <i class="ti ti-trash me-1"></i>
+                    Eliminar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

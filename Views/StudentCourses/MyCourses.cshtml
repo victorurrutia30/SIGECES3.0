@@ -4,45 +4,82 @@
     ViewData["Title"] = "Mis cursos";
 }
 
-<h2>@ViewData["Title"]</h2>
+<div class="page-header d-print-none mb-3">
+    <div class="row align-items-center">
+        <div class="col">
+            <div class="page-pretitle">
+                Estudiante
+            </div>
+            <h2 class="page-title">
+                Mis cursos
+            </h2>
+        </div>
+        <div class="col-auto ms-auto d-print-none">
+            <a asp-action="Index" class="btn btn-outline-primary">
+                <i class="ti ti-book me-1"></i>
+                Ver catálogo
+            </a>
+        </div>
+    </div>
+</div>
 
 @if (!Model.Any())
 {
-    <p>Aún no estás inscrito en ningún curso.</p>
-    <p>
-        <a asp-action="Index" class="btn btn-primary">Ver catálogo de cursos</a>
-    </p>
+    <div class="card">
+        <div class="card-body text-center">
+            <p class="text-muted mb-3">
+                Aún no estás inscrito en ningún curso.
+            </p>
+            <a asp-action="Index" class="btn btn-primary">
+                <i class="ti ti-book me-1"></i>
+                Ver catálogo de cursos
+            </a>
+        </div>
+    </div>
 }
 else
 {
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Curso</th>
-                <th>Categoría</th>
-                <th>Instructor</th>
-                <th>Fecha de inscripción</th>
-                <th>Estado</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var enrollment in Model)
-            {
-                var course = enrollment.Course!;
-                <tr>
-                    <td>@course.Title</td>
-                    <td>@course.Category?.Name</td>
-                    <td>@course.Instructor?.FullName</td>
-                    <td>@enrollment.EnrolledAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
-                    <td>@enrollment.Status.GetDisplayName()</td>
-                    <td>
-                        <a asp-action="Details" asp-route-id="@course.Id" class="btn btn-sm btn-outline-primary">
-                            Ver curso
-                        </a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table card-table table-vcenter table-striped table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Curso</th>
+                            <th>Categoría</th>
+                            <th>Instructor</th>
+                            <th>Fecha de inscripción</th>
+                            <th>Estado</th>
+                            <th class="w-1"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var enrollment in Model)
+                        {
+                            var course = enrollment.Course!;
+                            <tr>
+                                <td>@course.Title</td>
+                                <td class="text-muted">@course.Category?.Name</td>
+                                <td>@course.Instructor?.FullName</td>
+                                <td>@enrollment.EnrolledAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>
+                                    <span class="badge bg-primary-lt">
+                                        @enrollment.Status.GetDisplayName()
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <a asp-action="Details"
+                                       asp-route-id="@course.Id"
+                                       class="btn btn-sm btn-outline-primary">
+                                        <i class="ti ti-eye me-1"></i>
+                                        Ver curso
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 }

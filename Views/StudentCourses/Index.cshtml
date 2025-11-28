@@ -3,55 +3,117 @@
 @{
     ViewData["Title"] = "Catálogo de cursos";
     var enrolledIds = ViewBag.EnrolledCourseIds as List<int> ?? new List<int>();
+    var search = Context.Request.Query["q"].ToString();
 }
 
-<h2>@ViewData["Title"]</h2>
+<div class="page-header d-print-none mb-3">
+    <div class="row align-items-center">
+        <div class="col">
+            <div class="page-pretitle">
+                Estudiante
+            </div>
+            <h2 class="page-title">
+                Catálogo de cursos
+            </h2>
+            <div class="text-muted small">
+                Cursos extracurriculares disponibles en SIGECES.
+            </div>
+        </div>
+    </div>
+</div>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Curso</th>
-            <th>Categoría</th>
-            <th>Instructor</th>
-            <th>Estado</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var course in Model)
-        {
-            var isEnrolled = enrolledIds.Contains(course.Id);
-            <tr>
-                <td>@course.Title</td>
-                <td>@course.Category?.Name</td>
-                <td>@course.Instructor?.FullName</td>
-                <td>
-                    @if (isEnrolled)
+<div class="card">
+    <div class="card-header">
+        <form method="get" class="row g-2 w-100">
+            <div class="col-md-6">
+                <div class="input-icon">
+                    <span class="input-icon-addon">
+                        <i class="ti ti-search"></i>
+                    </span>
+                    <input type="text"
+                           name="q"
+                           value="@search"
+                           class="form-control"
+                           placeholder="Buscar por nombre de curso, categoría o instructor..." />
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table card-table table-vcenter table-striped table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Curso</th>
+                        <th>Categoría</th>
+                        <th>Instructor</th>
+                        <th class="text-center">Estado</th>
+                        <th class="w-1"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
                     {
-                        <span class="badge bg-success">Inscrito</span>
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">
+                                No hay cursos disponibles por el momento.
+                            </td>
+                        </tr>
                     }
                     else
                     {
-                        <span class="badge bg-secondary">Disponible</span>
-                    }
-                </td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@course.Id" class="btn btn-sm btn-outline-primary">
-                        Ver detalles
-                    </a>
+                        @foreach (var course in Model)
+                        {
+                            var isEnrolled = enrolledIds.Contains(course.Id);
+                            <tr>
+                                <td>@course.Title</td>
+                                <td class="text-muted">@course.Category?.Name</td>
+                                <td>@course.Instructor?.FullName</td>
+                                <td class="text-center">
+                                    @if (isEnrolled)
+                                    {
+                                        <span class="badge bg-success-lt">
+                                            <i class="ti ti-check me-1"></i>
+                                            Inscrito
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary-lt">
+                                            Disponible
+                                        </span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    <div class="btn-list flex-nowrap">
+                                        <a asp-action="Details"
+                                           asp-route-id="@course.Id"
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="ti ti-eye me-1"></i>
+                                            Ver detalles
+                                        </a>
 
-                    @if (!isEnrolled)
-                    {
-                        <form asp-action="Enroll" method="post" class="d-inline">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="courseId" value="@course.Id" />
-                            <button type="submit" class="btn btn-sm btn-primary">
-                                Inscribirme
-                            </button>
-                        </form>
+                                        @if (!isEnrolled)
+                                        {
+                                            <form asp-action="Enroll"
+                                                  method="post"
+                                                  class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="courseId" value="@course.Id" />
+                                                <button type="submit" class="btn btn-sm btn-primary">
+                                                    <i class="ti ti-login me-1"></i>
+                                                    Inscribirme
+                                                </button>
+                                            </form>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
                     }
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -2,40 +2,134 @@
 
 @{
     ViewData["Title"] = "Usuarios";
+    var search = Context.Request.Query["q"].ToString();
+    var onlyActive = Context.Request.Query["onlyActive"].ToString() == "true";
 }
 
-<h2>Usuarios</h2>
+<div class="page-header d-print-none mb-3">
+    <div class="row align-items-center">
+        <div class="col">
+            <div class="page-pretitle">
+                Administración
+            </div>
+            <h2 class="page-title">
+                Usuarios
+            </h2>
+        </div>
+        <div class="col-auto ms-auto d-print-none">
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="ti ti-user-plus me-1"></i>
+                Nuevo usuario
+            </a>
+        </div>
+    </div>
+</div>
 
-<p>
-    <a asp-action="Create" class="btn btn-primary">Crear nuevo usuario</a>
-</p>
+<div class="card">
+    <div class="card-header">
+        <form method="get" class="row g-2 w-100">
+            <div class="col-md-4">
+                <div class="input-icon">
+                    <span class="input-icon-addon">
+                        <i class="ti ti-search"></i>
+                    </span>
+                    <input type="text"
+                           name="q"
+                           value="@search"
+                           class="form-control"
+                           placeholder="Buscar por nombre o correo..." />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label class="form-check mb-0 mt-1">
+                    <input type="checkbox"
+                           name="onlyActive"
+                           value="true"
+                           class="form-check-input"
+                           @(onlyActive ? "checked" : "") />
+                    <span class="form-check-label">
+                        Solo usuarios activos
+                    </span>
+                </label>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-outline-secondary w-100">
+                    <i class="ti ti-filter me-1"></i>
+                    Filtrar
+                </button>
+            </div>
+        </form>
+    </div>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Nombre</th>
-            <th>Correo</th>
-            <th>Rol</th>
-            <th>Activo</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var user in Model)
-        {
-            <tr>
-                <td>@user.FullName</td>
-                <td>@user.Email</td>
-                <td>@user.Role.GetDisplayName()</td>
-                <td>@(user.IsActive ? "Sí" : "No")</td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@user.Id" class="btn btn-sm btn-outline-primary">Editar</a>
-                    @if (user.IsActive)
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table card-table table-vcenter table-striped table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Correo</th>
+                        <th>Rol</th>
+                        <th class="text-center">Estado</th>
+                        <th class="w-1"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
                     {
-                        <a asp-action="Delete" asp-route-id="@user.Id" class="btn btn-sm btn-outline-danger">Desactivar</a>
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">
+                                No se encontraron usuarios.
+                            </td>
+                        </tr>
                     }
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+                    else
+                    {
+                        @foreach (var user in Model)
+                        {
+                            <tr>
+                                <td>@user.FullName</td>
+                                <td class="text-muted">@user.Email</td>
+                                <td>@user.Role.GetDisplayName()</td>
+                                <td class="text-center">
+                                    @if (user.IsActive)
+                                    {
+                                        <span class="badge bg-success-lt">
+                                            <i class="ti ti-circle-check me-1"></i>
+                                            Activo
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary-lt">
+                                            <i class="ti ti-circle-dashed me-1"></i>
+                                            Inactivo
+                                        </span>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    <div class="btn-list flex-nowrap">
+                                        <a asp-action="Edit"
+                                           asp-route-id="@user.Id"
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="ti ti-pencil me-1"></i>
+                                            Editar
+                                        </a>
+                                        @if (user.IsActive)
+                                        {
+                                            <a asp-action="Delete"
+                                               asp-route-id="@user.Id"
+                                               class="btn btn-sm btn-outline-danger">
+                                                <i class="ti ti-user-off me-1"></i>
+                                                Desactivar
+                                            </a>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

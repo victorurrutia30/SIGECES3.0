@@ -2,40 +2,136 @@
 
 @{
     ViewData["Title"] = "Categorías de cursos";
+    var search = Context.Request.Query["q"].ToString();
+    var onlyActive = Context.Request.Query["onlyActive"].ToString() == "true";
 }
 
-<h2>Categorías de cursos</h2>
+<div class="page-header d-print-none mb-3">
+    <div class="row align-items-center">
+        <div class="col">
+            <div class="page-pretitle">
+                Catálogos
+            </div>
+            <h2 class="page-title">
+                Categorías de cursos
+            </h2>
+        </div>
+        <div class="col-auto ms-auto d-print-none">
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="ti ti-category-plus me-1"></i>
+                Nueva categoría
+            </a>
+        </div>
+    </div>
+</div>
 
-<p>
-    <a asp-action="Create" class="btn btn-primary">Crear nueva categoría</a>
-</p>
+<div class="card">
+    <div class="card-header">
+        <form method="get" class="row g-2 w-100">
+            <div class="col-md-4">
+                <div class="input-icon">
+                    <span class="input-icon-addon">
+                        <i class="ti ti-search"></i>
+                    </span>
+                    <input type="text"
+                           name="q"
+                           value="@search"
+                           class="form-control"
+                           placeholder="Buscar por nombre o descripción..." />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label class="form-check mb-0 mt-1">
+                    <input type="checkbox"
+                           name="onlyActive"
+                           value="true"
+                           class="form-check-input"
+                           @(onlyActive ? "checked" : "") />
+                    <span class="form-check-label">
+                        Solo categorías activas
+                    </span>
+                </label>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-outline-secondary w-100">
+                    <i class="ti ti-filter me-1"></i>
+                    Filtrar
+                </button>
+            </div>
+        </form>
+    </div>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Nombre</th>
-            <th>Descripción</th>
-            <th>Activo</th>
-            <th>Cursos asociados</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var cat in Model)
-        {
-            <tr>
-                <td>@cat.Name</td>
-                <td>@cat.Description</td>
-                <td>@(cat.IsActive ? "Sí" : "No")</td>
-                <td>@(cat.Courses?.Count() ?? 0)</td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@cat.Id" class="btn btn-sm btn-outline-primary">Editar</a>
-                    @if (cat.IsActive)
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table card-table table-vcenter table-striped table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th class="text-center">Estado</th>
+                        <th class="text-center">Cursos asociados</th>
+                        <th class="w-1"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
                     {
-                        <a asp-action="Delete" asp-route-id="@cat.Id" class="btn btn-sm btn-outline-danger">Desactivar</a>
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">
+                                No se encontraron categorías.
+                            </td>
+                        </tr>
                     }
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+                    else
+                    {
+                        @foreach (var cat in Model)
+                        {
+                            <tr>
+                                <td>@cat.Name</td>
+                                <td class="text-muted">@cat.Description</td>
+                                <td class="text-center">
+                                    @if (cat.IsActive)
+                                    {
+                                        <span class="badge bg-success-lt">
+                                            <i class="ti ti-circle-check me-1"></i>
+                                            Activa
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary-lt">
+                                            <i class="ti ti-circle-dashed me-1"></i>
+                                            Inactiva
+                                        </span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    @(cat.Courses?.Count() ?? 0)
+                                </td>
+                                <td class="text-end">
+                                    <div class="btn-list flex-nowrap">
+                                        <a asp-action="Edit"
+                                           asp-route-id="@cat.Id"
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="ti ti-pencil me-1"></i>
+                                            Editar
+                                        </a>
+                                        @if (cat.IsActive)
+                                        {
+                                            <a asp-action="Delete"
+                                               asp-route-id="@cat.Id"
+                                               class="btn btn-sm btn-outline-danger">
+                                                <i class="ti ti-square-minus me-1"></i>
+                                                Desactivar
+                                            </a>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

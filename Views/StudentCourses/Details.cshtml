@@ -13,113 +13,164 @@
     int percent = total == 0 ? 0 : (completed * 100 / total);
 
     string statusText = "No inscrito";
-    string statusClass = "bg-secondary";
+    string badgeClass = "bg-secondary-lt";
 
     if (isEnrolled)
     {
         if (status == SIGECES.Models.EnrollmentStatus.Completed)
         {
             statusText = "Completado";
-            statusClass = "bg-success";
+            badgeClass = "bg-success-lt";
         }
         else
         {
             statusText = "En progreso";
-            statusClass = "bg-warning";
+            badgeClass = "bg-warning-lt";
         }
     }
 }
 
-<h2>@Model.Title</h2>
-
-<p>
-    <strong>Categoría:</strong> @Model.Category?.Name <br />
-    <strong>Instructor:</strong> @Model.Instructor?.FullName
-</p>
-
-<p>@Model.Description</p>
-
-<p>
-    <strong>Estado:</strong>
-    @if (isEnrolled)
-    {
-        <span class="badge @statusClass">
-            @statusText
-        </span>
-    }
-    else
-    {
-        <span class="badge bg-secondary">No inscrito</span>
-    }
-</p>
-
-@if (!isEnrolled)
-{
-    <form asp-action="Enroll" method="post">
-        @Html.AntiForgeryToken()
-        <input type="hidden" name="courseId" value="@Model.Id" />
-        <button type="submit" class="btn btn-primary">Inscribirme en este curso</button>
-    </form>
-}
-
-<hr />
-
-<h3>Lecciones</h3>
-
-<div class="mb-3">
-    <label>Progreso del curso: @percent%</label>
-    <div class="progress">
-        <div class="progress-bar bg-success" role="progressbar"
-             style="width:@percent%"></div>
+<div class="page-header d-print-none mb-3">
+    <div class="row align-items-center">
+        <div class="col">
+            <div class="page-pretitle">
+                Estudiante
+            </div>
+            <h2 class="page-title">
+                @Model.Title
+            </h2>
+            <div class="text-muted small">
+                Categoría: @Model.Category?.Name · Instructor: @Model.Instructor?.FullName
+            </div>
+        </div>
+        <div class="col-auto ms-auto d-print-none">
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <i class="ti ti-arrow-left me-1"></i>
+                Volver al catálogo
+            </a>
+        </div>
     </div>
 </div>
 
-@if (Model.Lessons != null && Model.Lessons.Any())
-{
-    <ol>
-        @foreach (var lesson in Model.Lessons.OrderBy(l => l.Order))
-        {
-            bool isCompleted = completedLessonIds.Contains(lesson.Id);
-
-            <div class="border p-2 mb-2 d-flex justify-content-between align-items-center">
-                <div>
-                    <strong>@lesson.Title</strong><br />
-                    <small>@lesson.Description</small><br />
-
-                    @* 👉 Link al recurso de la lección, si existe *@
-                    @if (!string.IsNullOrWhiteSpace(lesson.ResourceUrl))
+<div class="row">
+    <div class="col-lg-5 mb-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="badge @badgeClass">
+                        @statusText
+                    </span>
+                    @if (isEnrolled)
                     {
-                        <a href="@lesson.ResourceUrl"
-                           target="_blank"
-                           rel="noopener noreferrer">
-                            Ver recurso
-                        </a>
+                        <span class="text-muted small">
+                            @percent% completado
+                        </span>
                     }
                 </div>
 
-                <div>
-                    @if (!isCompleted)
-                    {
-                        <form asp-action="CompleteLesson" method="post">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="lessonId" value="@lesson.Id" />
-                            <button class="btn btn-success btn-sm">Marcar como completada</button>
-                        </form>
-                    }
-                    else
-                    {
-                        <span class="badge bg-success">Completada ✓</span>
-                    }
-                </div>
+                <p>@Model.Description</p>
+
+                @if (!isEnrolled)
+                {
+                    <form asp-action="Enroll" method="post" class="mt-3">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="courseId" value="@Model.Id" />
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="ti ti-login me-1"></i>
+                            Inscribirme en este curso
+                        </button>
+                    </form>
+                }
+
+                @if (isEnrolled && total > 0)
+                {
+                    <hr />
+                    <label class="form-label">Progreso del curso</label>
+                    <div class="progress mb-1">
+                        <div class="progress-bar bg-success"
+                             role="progressbar"
+                             style="width:@percent%"></div>
+                    </div>
+                    <div class="text-muted small">
+                        @completed / @total lecciones completadas
+                    </div>
+                }
             </div>
-        }
-    </ol>
-}
-else
-{
-    <p>Este curso aún no tiene lecciones configuradas.</p>
-}
+        </div>
+    </div>
 
-<p>
-    <a asp-action="Index" class="btn btn-secondary">Volver al catálogo</a>
-</p>
+    <div class="col-lg-7 mb-3">
+        <div class="card h-100">
+            <div class="card-header">
+                <h3 class="card-title mb-0">
+                    Lecciones
+                </h3>
+            </div>
+            <div class="card-body">
+                @if (Model.Lessons != null && Model.Lessons.Any())
+                {
+                    <ol class="list-unstyled mb-0">
+                        @foreach (var lesson in Model.Lessons.OrderBy(l => l.Order))
+                        {
+                            bool isCompleted = completedLessonIds.Contains(lesson.Id);
+
+                            <li class="mb-2">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-body d-flex justify-content-between align-items-center">
+                                        <div class="me-3">
+                                            <div class="fw-bold">@lesson.Title</div>
+                                            <div class="text-muted small">@lesson.Description</div>
+
+                                            @if (!string.IsNullOrWhiteSpace(lesson.ResourceUrl))
+                                            {
+                                                <a href="@lesson.ResourceUrl"
+                                                   target="_blank"
+                                                   rel="noopener noreferrer"
+                                                   class="small">
+                                                    <i class="ti ti-external-link me-1"></i>
+                                                    Ver recurso
+                                                </a>
+                                            }
+                                        </div>
+
+                                        <div class="text-end">
+                                            @if (!isCompleted && isEnrolled)
+                                            {
+                                                <form asp-action="CompleteLesson" method="post">
+                                                    @Html.AntiForgeryToken()
+                                                    <input type="hidden" name="lessonId" value="@lesson.Id" />
+                                                    <button class="btn btn-success btn-sm">
+                                                        <i class="ti ti-check me-1"></i>
+                                                        Marcar completada
+                                                    </button>
+                                                </form>
+                                            }
+                                            else if (isCompleted)
+                                            {
+                                                <span class="badge bg-success-lt">
+                                                    Completada ✓
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary-lt">
+                                                    Inscríbete para avanzar
+                                                </span>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        }
+                    </ol>
+                }
+                else
+                {
+                    <p class="text-muted mb-0">
+                        Este curso aún no tiene lecciones configuradas.
+                    </p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
