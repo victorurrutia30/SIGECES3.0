@@ -19,7 +19,8 @@
     <dd class="col-sm-10">@((Model.Courses?.Count()) ?? 0)</dd>
 </dl>
 
-<form asp-action="Delete" method="post">
+<form asp-action="Delete" method="post"
+      data-confirm="¿Seguro que deseas desactivar esta categoría? Los cursos seguirán existiendo.">
     @Html.AntiForgeryToken()
     <input type="hidden" asp-for="Id" />
     <button type="submit" class="btn btn-danger">Desactivar</button>

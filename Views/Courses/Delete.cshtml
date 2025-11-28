@@ -21,7 +21,8 @@
     </dl>
 </div>
 
-<form asp-action="Delete" method="post">
+<form asp-action="Delete" method="post"
+      data-confirm="¿Seguro que deseas eliminar este curso? Esta acción no se puede deshacer.">
     @Html.AntiForgeryToken()
     <input type="hidden" asp-for="Id" />
     <button type="submit" class="btn btn-danger">Eliminar</button>

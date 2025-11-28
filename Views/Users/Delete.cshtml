@@ -19,7 +19,8 @@
     <dd class="col-sm-10">@Model.Role</dd>
 </dl>
 
-<form asp-action="Delete" method="post">
+<form asp-action="Delete" method="post"
+      data-confirm="¿Seguro que deseas desactivar este usuario? Podrá volver a activarse más adelante.">
     @Html.AntiForgeryToken()
     <input type="hidden" asp-for="Id" />
     <button type="submit" class="btn btn-danger">Desactivar</button>
