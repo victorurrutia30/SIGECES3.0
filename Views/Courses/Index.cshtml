@@ -4,7 +4,25 @@
     ViewData["Title"] = "Cursos";
     var search = Context.Request.Query["q"].ToString();
     var onlyActive = Context.Request.Query["onlyActive"].ToString() == "true";
+
+    // Listas distintas para filtros cliente (DataTables)
+    var courses = Model ?? Enumerable.Empty<SIGECES.Models.Course>();
+
+    var categoryNames = courses
+        .Where(c => c.Category != null)
+        .Select(c => c.Category!.Name)
+        .Distinct()
+        .OrderBy(n => n)
+        .ToList();
+
+    var instructorNames = courses
+        .Where(c => c.Instructor != null)
+        .Select(c => c.Instructor!.FullName)
+        .Distinct()
+        .OrderBy(n => n)
+        .ToList();
 }
+
 
 <div class="page-header d-print-none mb-3">
     <div class="row align-items-center">
@@ -61,9 +79,65 @@
         </form>
     </div>
 
+    <!-- Filtros avanzados (cliente, usando DataTables) -->
+    <div class="px-3 pt-3">
+        <div class="row g-2 align-items-end">
+            <div class="col-md-4">
+                <label for="courses-title-filter" class="form-label small mb-1">
+                    Filtrar por título (cliente)
+                </label>
+                <input type="text"
+                       id="courses-title-filter"
+                       class="form-control form-control-sm"
+                       placeholder="Escribe parte del título del curso..." />
+            </div>
+
+            <div class="col-md-3">
+                <label for="courses-category-filter" class="form-label small mb-1">
+                    Categoría
+                </label>
+                <select id="courses-category-filter"
+                        class="form-select form-select-sm">
+                    <option value="">Todas</option>
+                    @foreach (var name in categoryNames)
+                    {
+                        <option value="@name">@name</option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <label for="courses-instructor-filter" class="form-label small mb-1">
+                    Instructor
+                </label>
+                <select id="courses-instructor-filter"
+                        class="form-select form-select-sm">
+                    <option value="">Todos</option>
+                    @foreach (var name in instructorNames)
+                    {
+                        <option value="@name">@name</option>
+                    }
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <label for="courses-status-filter" class="form-label small mb-1">
+                    Estado
+                </label>
+                <select id="courses-status-filter"
+                        class="form-select form-select-sm">
+                    <option value="">Todos</option>
+                    <option value="Activo">Activos</option>
+                    <option value="Inactivo">Inactivos</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+
     <div class="card-body p-0">
         <div class="table-responsive">
-            <table class="table card-table table-vcenter table-striped table-hover mb-0">
+            <table class="table card-table table-vcenter table-striped table-hover mb-0 js-datatable-courses">
                 <thead>
                     <tr>
                         <th>Título</th>
@@ -143,3 +217,60 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            // Inicializar DataTable usando configuración global
+            // y ocultar la barra de búsqueda nativa de DataTables (sin 'f' en el dom)
+            var table = $('.js-datatable-courses').DataTable({
+                dom:
+                    "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+
+                // Deshabilitar orden / búsqueda en la última columna (acciones)
+                columnDefs: [
+                    { orderable: false, searchable: false, targets: -1 }
+                ]
+            });
+
+            // Filtro por título (columna 0)
+            $('#courses-title-filter').on('keyup change', function () {
+                table
+                    .column(0)
+                    .search(this.value)
+                    .draw();
+            });
+
+            // Filtro por categoría (columna 1)
+            $('#courses-category-filter').on('change', function () {
+                var value = this.value || '';
+                table
+                    .column(1)
+                    .search(value)
+                    .draw();
+            });
+
+            // Filtro por instructor (columna 2)
+            $('#courses-instructor-filter').on('change', function () {
+                var value = this.value || '';
+                table
+                    .column(2)
+                    .search(value)
+                    .draw();
+            });
+
+            // Filtro por estado (columna 3: "Activo"/"Inactivo")
+            $('#courses-status-filter').on('change', function () {
+                var value = this.value || '';
+                table
+                    .column(3)
+                    .search(value)
+                    .draw();
+            });
+        });
+    </script>
+}
+
+
