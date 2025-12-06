@@ -297,6 +297,7 @@ namespace SIGECES.Controllers
         }
 
         // Cambiar estado de una inscripción (InProgress / Completed)
+        // Cambiar estado de una inscripción (InProgress / Completed)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateEnrollmentStatus(int enrollmentId, EnrollmentStatus status)
@@ -311,12 +312,54 @@ namespace SIGECES.Controllers
             if (enrollment.Course == null || !UserCanManageCourse(enrollment.Course))
                 return Forbid();
 
+            // 1) Actualizamos el estado de la inscripción
             enrollment.Status = status;
+
+            // 2) Si se marca como COMPLETADO, marcamos TODAS las lecciones como completadas
+            if (status == EnrollmentStatus.Completed)
+            {
+                // Todas las lecciones del curso
+                var lessonIds = await _context.Lessons
+                    .Where(l => l.CourseId == enrollment.CourseId)
+                    .Select(l => l.Id)
+                    .ToListAsync();
+
+                if (lessonIds.Any())
+                {
+                    // Lecciones ya registradas como completadas por este estudiante
+                    var existingLessonIds = await _context.LessonProgresses
+                        .Where(lp => lp.StudentId == enrollment.StudentId &&
+                                     lessonIds.Contains(lp.LessonId))
+                        .Select(lp => lp.LessonId)
+                        .ToListAsync();
+
+                    var now = DateTime.UtcNow;
+
+                    // Creamos registros SOLO para las lecciones que faltan
+                    var newProgress = lessonIds
+                        .Where(id => !existingLessonIds.Contains(id))
+                        .Select(id => new LessonProgress
+                        {
+                            LessonId = id,
+                            StudentId = enrollment.StudentId,
+                            CompletedAt = now
+                        })
+                        .ToList();
+
+                    if (newProgress.Count > 0)
+                    {
+                        _context.LessonProgresses.AddRange(newProgress);
+                    }
+                }
+            }
+
+            // 3) Un solo SaveChanges para que todo sea atómico
             await _context.SaveChangesAsync();
 
-            TempData["SuccessMessage"] = "Estado de la inscripción actualizado correctamente.";
+            TempData["SuccessMessage"] = "Estado actualizado correctamente.";
             return RedirectToAction(nameof(Students), new { id = enrollment.CourseId });
         }
+
 
         // Quitar manualmente a un estudiante del curso
         [HttpPost]

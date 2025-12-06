@@ -96,7 +96,8 @@
         else
         {
             <div class="table-responsive">
-                <table class="table card-table table-vcenter table-striped table-hover mb-0">
+                <table class="table card-table table-vcenter table-striped table-hover mb-0 js-datatable-course-students">
+
                     <thead>
                         <tr>
                             <th>Estudiante</th>
@@ -141,7 +142,8 @@
                                 <td>
                                     <form asp-action="UpdateEnrollmentStatus"
                                           method="post"
-                                          class="d-flex">
+                                          class="d-flex"
+                                          data-enrollment-status-form="true">
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="enrollmentId" value="@e.Id" />
 
@@ -183,3 +185,46 @@
         }
     </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        $(function () {
+            // Inicializar DataTable para la tabla de estudiantes
+            var table = $('.js-datatable-course-students').DataTable({
+                columnDefs: [
+                    { orderable: false, searchable: false, targets: -1 } // columna acciones
+                ]
+            });
+
+            // Confirmación SOLO cuando se marca como "Completado"
+            $('form[data-enrollment-status-form="true"]').on('submit', function (e) {
+                var $form = $(this);
+                var selected = $form.find('select[name="status"]').val();
+
+                // 2 = EnrollmentStatus.Completed
+                if (selected === '2') {
+                    e.preventDefault();
+
+                    Swal.fire({
+                        title: 'Marcar curso como completado',
+                        text: '¿Estás seguro de marcar este curso como completado para este estudiante? ' +
+                              'Se marcarán todas las lecciones como completadas.',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Sí, marcar como completado',
+                        cancelButtonText: 'Cancelar'
+                    }).then(function (result) {
+                        if (result.isConfirmed) {
+                            // Desenganchamos el handler para evitar bucle y enviamos de verdad
+                            $form.off('submit');
+                            $form.submit();
+                        }
+                    });
+                }
+                // Si no es "Completado", dejamos pasar el submit normal
+            });
+        });
+    </script>
+}
