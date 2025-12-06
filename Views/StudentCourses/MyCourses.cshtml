@@ -41,8 +41,35 @@ else
 {
     <div class="card">
         <div class="card-body p-0">
+            <!-- Filtros superiores específicos de Mis cursos -->
+            <div class="px-3 pt-3">
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-6">
+                        <label for="myCourses-title-filter" class="form-label small mb-1">
+                            Filtrar por curso
+                        </label>
+                        <input type="text"
+                               id="myCourses-title-filter"
+                               class="form-control form-control-sm"
+                               placeholder="Escribe parte del título del curso..." />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="myCourses-status-filter" class="form-label small mb-1">
+                            Filtrar por estado / progreso
+                        </label>
+                        <select id="myCourses-status-filter"
+                                class="form-select form-select-sm">
+                            <option value="">Todos</option>
+                            <option value="En progreso">En progreso</option>
+                            <option value="Completado">Completado</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
             <div class="table-responsive">
-                <table class="table card-table table-vcenter table-striped table-hover mb-0">
+                <table class="table card-table table-vcenter table-striped table-hover mb-0 js-datatable-my-courses">
                     <thead>
                         <tr>
                             <th>Curso</th>
@@ -57,6 +84,7 @@ else
                         @foreach (var enrollment in Model)
                         {
                             var course = enrollment.Course!;
+
                             <tr>
                                 <td>@course.Title</td>
                                 <td class="text-muted">@course.Category?.Name</td>
@@ -82,4 +110,38 @@ else
             </div>
         </div>
     </div>
+}
+
+
+@section Scripts {
+    <script>
+        $(function () {
+            // Inicializar DataTable usando la configuración global (datatable-defaults.js)
+            var table = $('.js-datatable-my-courses').DataTable({
+                // Solo deshabilitamos orden y búsqueda en la columna de acciones
+                columnDefs: [
+                    { orderable: false, searchable: false, targets: -1 }
+                ]
+            });
+
+            // Filtro por título de curso (columna 0)
+            $('#myCourses-title-filter').on('keyup change', function () {
+                table
+                    .column(0)              // Columna "Curso"
+                    .search(this.value)
+                    .draw();
+            });
+
+            // Filtro por estado / progreso (columna 4)
+            $('#myCourses-status-filter').on('change', function () {
+                var value = this.value;
+
+                // Si está vacío, limpiamos el filtro de la columna
+                table
+                    .column(4)              // Columna "Estado"
+                    .search(value)
+                    .draw();
+            });
+        });
+    </script>
 }

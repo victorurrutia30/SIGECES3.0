@@ -16,6 +16,11 @@
     <!-- Iconos Tabler como webfont -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@tabler/icons-webfont@latest/tabler-icons.min.css" />
 
+    <!-- DataTables CSS -->
+    <link rel="stylesheet"
+          href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css" />
+
+
     <!-- Estilos propios del sitio -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/SIGECES.styles.css" asp-append-version="true" />
@@ -166,10 +171,7 @@
                                     </span>
                                     <div class="d-none d-xl-block ps-2">
                                         <div>@userName</div>
-                                        @if (!string.IsNullOrEmpty(userRole))
-                                        {
-                                            <div class="mt-1 small text-muted">@userRole</div>
-                                        }
+                                        
                                     </div>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
@@ -249,6 +251,9 @@
     <!-- jQuery global (para validación, DataTables, etc.) -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
 
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
+
     <!-- ApexCharts global (para dashboards) -->
     <script src="https://cdn.jsdelivr.net/npm/apexcharts@latest"></script>
 
@@ -257,6 +262,9 @@
 
     <!-- Scripts propios -->
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <!-- Configuración global de DataTables -->
+    <script src="~/js/datatable-defaults.js" asp-append-version="true"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
 
