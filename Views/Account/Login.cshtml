@@ -2,73 +2,105 @@
 
 @{
     ViewData["Title"] = "Iniciar sesión";
+    /* Opcional: Si usas el layout modificado anteriormente, esto ayuda a centrarlo */
+    ViewData["PageType"] = "Auth";
 }
 
-<div class="page-header d-print-none mb-3">
-    <div class="row align-items-center">
-        <div class="col">
-            <div class="page-pretitle">
-                Acceso
-            </div>
-            <h2 class="page-title">
-                Iniciar sesión
-            </h2>
-        </div>
-    </div>
-</div>
+<div class="page page-center">
+    <div class="container container-normal py-4">
+        <div class="row align-items-center g-4">
+            <div class="col-lg">
+                <div class="page page-center">
+                    <div class="container container-normal py-4">
+                        <div class="row align-items-center g-4">
+                            <div class="col-lg">
 
-<div class="row">
-    <div class="col-md-6 col-lg-4">
-        <div class="card">
-            <div class="card-body">
-                <div class="text-center mb-3">
-                    <span class="avatar avatar-lg bg-primary-lt mb-2">
-                        <i class="ti ti-lock"></i>
-                    </span>
-                    <div class="text-muted">
-                        Usa tus credenciales de SIGECES
+                                <div class="w-100 m-auto" style="max-width: 1024px;">
+
+                                    <div class="text-center mb-4">
+                                        <a href="." class="navbar-brand navbar-brand-autodark">
+                                            <i class="ti ti-school me-2 text-utec"></i> SIGECES UTEC
+                                        </a>
+                                    </div>
+
+                                    <div class="card card-login border-0 shadow-lg overflow-hidden">
+                                        <div class="row g-0">
+                                            <div class="col-lg-6 d-none d-lg-flex bg-utec-gradient text-white p-5 flex-column justify-content-center align-items-center text-center position-relative">
+                                                <div class="position-absolute top-0 start-0 w-100 h-100 opacity-10"
+                                                     style="background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 20px 20px;">
+                                                </div>
+                                                <div class="position-relative z-index-1">
+                                                    <div class="avatar avatar-xl bg-white text-utec rounded-circle mb-4 shadow-sm">
+                                                        <i class="ti ti-user-shield fs-1"></i>
+                                                    </div>
+                                                    <h2 class="h1 fw-bold mb-3">Bienvenido</h2>
+                                                    <p class="text-white-75 mb-0 fs-3">
+                                                        Ingresa a la plataforma de gestión de cursos extracurriculares.
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-6 d-flex flex-column justify-content-center">
+                                                <div class="card-body p-5">
+                                                    <h2 class="h2 text-center mb-4 text-utec fw-bold">Ingresa a tu cuenta</h2>
+
+                                                    <form asp-action="Login" method="post" autocomplete="off">
+                                                        @Html.AntiForgeryToken()
+
+                                                        <div class="mb-3">
+                                                            <label asp-for="Email" class="form-label">Correo Institucional</label>
+                                                            <div class="input-icon mb-3">
+                                                                <span class="input-icon-addon">
+                                                                    <i class="ti ti-mail"></i>
+                                                                </span>
+                                                                <input asp-for="Email" class="form-control" placeholder="nombre.apellido@mail.utec.edu.sv" autocomplete="email">
+                                                            </div>
+                                                            <span asp-validation-for="Email" class="text-danger small"></span>
+                                                        </div>
+
+                                                        <div class="mb-2">
+                                                            <label asp-for="Password" class="form-label">
+                                                                Contraseña
+                                                                <span class="form-label-description">
+                                                                    <a href="#" class="text-muted" tabindex="-1">¿Olvidaste tu contraseña?</a>
+                                                                </span>
+                                                            </label>
+                                                            <div class="input-icon mb-3">
+                                                                <span class="input-icon-addon">
+                                                                    <i class="ti ti-lock"></i>
+                                                                </span>
+                                                                <input asp-for="Password" type="password" class="form-control" placeholder="••••••••" autocomplete="current-password">
+                                                            </div>
+                                                            <span asp-validation-for="Password" class="text-danger small"></span>
+                                                        </div>
+
+                                                        <div class="mb-2">
+                                                            <label class="form-check">
+                                                                <input asp-for="RememberMe" class="form-check-input" />
+                                                                <span class="form-check-label">Mantener sesión iniciada</span>
+                                                            </label>
+                                                        </div>
+
+                                                        <input type="hidden" asp-for="ReturnUrl" />
+
+                                                        <div class="form-footer mt-4">
+                                                            <button type="submit" class="btn btn-pill btn-primary w-100 py-2">
+                                                                <i class="ti ti-login me-2"></i> Iniciar sesión
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                   
+
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-
-                <form asp-action="Login" method="post">
-                    @Html.AntiForgeryToken()
-
-                    <div class="mb-3">
-                        <label asp-for="Email" class="form-label"></label>
-                        <div class="input-icon">
-                            <span class="input-icon-addon">
-                                <i class="ti ti-mail"></i>
-                            </span>
-                            <input asp-for="Email" class="form-control" />
-                        </div>
-                        <span asp-validation-for="Email" class="text-danger"></span>
-                    </div>
-
-                    <div class="mb-3">
-                        <label asp-for="Password" class="form-label"></label>
-                        <div class="input-icon">
-                            <span class="input-icon-addon">
-                                <i class="ti ti-key"></i>
-                            </span>
-                            <input asp-for="Password" class="form-control" />
-                        </div>
-                        <span asp-validation-for="Password" class="text-danger"></span>
-                    </div>
-
-                    <div class="form-check mb-3">
-                        <input asp-for="RememberMe" class="form-check-input" />
-                        <label asp-for="RememberMe" class="form-check-label"></label>
-                    </div>
-
-                    <input type="hidden" asp-for="ReturnUrl" />
-
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="ti ti-login me-1"></i>
-                            Iniciar sesión
-                        </button>
-                    </div>
-                </form>
             </div>
         </div>
     </div>

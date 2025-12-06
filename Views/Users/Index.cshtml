@@ -2,8 +2,6 @@
 
 @{
     ViewData["Title"] = "Usuarios";
-    var search = Context.Request.Query["q"].ToString();
-    var onlyActive = Context.Request.Query["onlyActive"].ToString() == "true";
 }
 
 <div class="page-header d-print-none mb-3">
@@ -26,44 +24,37 @@
 </div>
 
 <div class="card">
-    <div class="card-header">
-        <form method="get" class="row g-2 w-100">
-            <div class="col-md-4">
-                <div class="input-icon">
-                    <span class="input-icon-addon">
-                        <i class="ti ti-search"></i>
-                    </span>
-                    <input type="text"
-                           name="q"
-                           value="@search"
-                           class="form-control"
-                           placeholder="Buscar por nombre o correo..." />
-                </div>
-            </div>
-            <div class="col-md-3">
-                <label class="form-check mb-0 mt-1">
-                    <input type="checkbox"
-                           name="onlyActive"
-                           value="true"
-                           class="form-check-input"
-                           @(onlyActive ? "checked" : "") />
-                    <span class="form-check-label">
-                        Solo usuarios activos
-                    </span>
+
+    <!-- Filtros cliente (DataTables) -->
+    <div class="px-3 pt-3">
+        <div class="row g-2 align-items-end">
+            <div class="col-md-5">
+                <label for="users-text-filter" class="form-label small mb-1">
+                    Filtrar por nombre / correo
                 </label>
+                <input type="text"
+                       id="users-text-filter"
+                       class="form-control form-control-sm"
+                       placeholder="Escribe parte del nombre o correo..." />
             </div>
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-outline-secondary w-100">
-                    <i class="ti ti-filter me-1"></i>
-                    Filtrar
-                </button>
+
+            <div class="col-md-3">
+                <label for="users-status-filter" class="form-label small mb-1">
+                    Estado
+                </label>
+                <select id="users-status-filter"
+                        class="form-select form-select-sm">
+                    <option value="">Todos</option>
+                    <option value="Activo">Activos</option>
+                    <option value="Inactivo">Inactivos</option>
+                </select>
             </div>
-        </form>
+        </div>
     </div>
 
     <div class="card-body p-0">
         <div class="table-responsive">
-            <table class="table card-table table-vcenter table-striped table-hover mb-0">
+            <table class="table card-table table-vcenter table-striped table-hover mb-0 js-datatable-users">
                 <thead>
                     <tr>
                         <th>Nombre</th>
@@ -133,3 +124,34 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            var table = $('.js-datatable-users').DataTable({
+                dom:
+                    "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+                columnDefs: [
+                    { orderable: false, searchable: false, targets: -1 } // acciones
+                ]
+            });
+
+            // Filtro global nombre+correo
+            $('#users-text-filter').on('keyup change', function () {
+                var value = this.value || '';
+                table.search(value).draw();
+            });
+
+            // Filtro por estado (columna 3: "Activo"/"Inactivo")
+            $('#users-status-filter').on('change', function () {
+                var value = this.value || '';
+                table
+                    .column(3)
+                    .search(value)
+                    .draw();
+            });
+        });
+    </script>
+}

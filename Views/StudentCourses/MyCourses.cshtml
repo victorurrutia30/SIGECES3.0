@@ -112,34 +112,24 @@ else
     </div>
 }
 
-
 @section Scripts {
     <script>
-               // /wwwroot/js/studentcourses-mycourses.js
-
         $(function () {
-            if (!window.Sigeces || !$.fn.DataTable) {
+            if (!$.fn.DataTable) {
                 return;
             }
 
-            // Inicializamos la tabla "Mis cursos" usando el helper global
-            var table = Sigeces.initDataTable('.js-datatable-my-courses', {
-                // Sobrescribimos el "dom" SOLO para esta tabla
-                // Quitamos la 'f' para que DataTables NO pinte su propia caja de búsqueda
+            // Inicializar DataTable con paginación y sin caja de búsqueda nativa ('f')
+            var table = $('.js-datatable-my-courses').DataTable({
                 dom:
                     "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'>>" +
                     "<'row'<'col-sm-12'tr>>" +
                     "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
 
-                // Solo deshabilitamos orden y búsqueda en la última columna (acciones)
                 columnDefs: [
-                    { orderable: false, searchable: false, targets: -1 }
+                    { orderable: false, searchable: false, targets: -1 } // columna acciones
                 ]
             });
-
-            if (!table) {
-                return;
-            }
 
             // 🔎 Filtro por título de curso (columna 0)
             $('#myCourses-title-filter').on('keyup change', function () {
@@ -159,6 +149,5 @@ else
                     .draw();
             });
         });
-
     </script>
 }

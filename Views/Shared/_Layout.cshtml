@@ -195,12 +195,17 @@
 
             <!-- Cuerpo de página -->
             <div class="page-body">
-                <div class="container-xl">
-                    @* Sección opcional para headers de página específicos *@
-                    @RenderSection("PageHeader", required: false)
-
+                @if (ViewData["PageType"]?.ToString() == "Landing")
+                {
                     @RenderBody()
-                </div>
+                }
+                else
+                {
+                    <div class="container-xl">
+                        @RenderSection("PageHeader", required: false)
+                        @RenderBody()
+                    </div>
+                }
             </div>
 
             <footer class="footer footer-transparent d-print-none">

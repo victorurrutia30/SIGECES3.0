@@ -1,124 +1,192 @@
-﻿// wwwroot/js/datatable-defaults.js
-// Configuración global y helpers para DataTables en SIGECES
+﻿@model IEnumerable(SIGECES.Models.Course)
 
-(function (window, $) {
-    'use strict';
+@{
+    ViewData["Title"] = "Catálogo de cursos";
+    var enrolledIds = ViewBag.EnrolledCourseIds as List<int> ?? new List<int>();
+    string search = ViewBag.Search as string ?? string.Empty;
+    int currentPage = ViewBag.Page is int ? (int)ViewBag.Page : 1;
+    int totalPages = ViewBag.TotalPages is int ? (int)ViewBag.TotalPages : 1;
+}
 
-    if (!$) {
-        console.warn('SIGECES DataTables: jQuery no está disponible.');
-        return;
-    }
+<div class="page-header d-print-none mb-3">
+    <div class="row align-items-center">
+        <div class="col">
+            <div class="page-pretitle">
+                Estudiante
+            </div>
+            <h2 class="page-title">
+                Catálogo de cursos
+            </h2>
+            <div class="text-muted mt-1">
+                Explora los cursos extracurriculares disponibles y apúntate a los que te interesen.
+            </div>
+        </div>
+        <div class="col-auto ms-auto d-print-none">
+            <a asp-controller="StudentCourses" asp-action="MyCourses" class="btn btn-outline-primary">
+                <i class="ti ti-bookmarks me-1"></i>
+                Mis cursos
+            </a>
+        </div>
+    </div>
+</div>
 
-    function hasDataTables() {
-        return $.fn && $.fn.dataTable;
-    }
+<div class="card">
+    <div class="card-header">
+        <form method="get" class="row g-2 w-100">
+            <div class="col-md-6">
+                <div class="input-icon">
+                    <span class="input-icon-addon">
+                        <i class="ti ti-search"></i>
+                    </span>
+                    <input type="text"
+                           id="catalog-search-input"   @* <- ID para el JS *@
+                           name="q"
+                           value="@search"
+                           class="form-control"
+                           placeholder="Buscar por título, categoría o instructor..." />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-outline-secondary w-100">
+                    <i class="ti ti-filter me-1"></i>
+                    Aplicar filtros
+                </button>
+            </div>
+        </form>
+    </div>
 
-    if (!hasDataTables()) {
-        console.warn('SIGECES DataTables: DataTables no está cargado. Revisa los scripts en _Layout.cshtml.');
-        return;
-    }
+    <div class="card-body">
+        @if (!Model.Any())
+        {
+            <div class="text-center text-muted py-5">
+                <i class="ti ti-mood-empty mb-2" style="font-size: 2rem;"></i>
+                <div>No se encontraron cursos con los filtros actuales.</div>
+            </div>
+        }
+        else
+        {
+            <div class="row row-cards">
+                @foreach (var course in Model)
+                {
+                    var isEnrolled = enrolledIds.Contains(course.Id);
 
-    // ============================
-    // Defaults globales
-    // ============================
-    $.extend(true, $.fn.dataTable.defaults, {
-        // Idioma español
-        language: {
-            url: 'https://cdn.datatables.net/plug-ins/1.13.8/i18n/es-ES.json'
-        },
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100 shadow-sm border-0">
+                            <div class="card-body d-flex flex-column">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <div class="text-muted text-uppercase fs-6">
+                                            @course.Category?.Name
+                                        </div>
+                                        <h3 class="card-title mb-0">
+                                            @course.Title
+                                        </h3>
+                                    </div>
+                                    <span class="badge @(isEnrolled ? "bg-success-lt" : "bg-secondary-lt")">
+                                        <i class="ti @(isEnrolled ? "ti-check" : "ti-plus") me-1"></i>
+                                        @(isEnrolled ? "Inscrito" : "Disponible")
+                                    </span>
+                                </div>
 
-        // Paginación estándar
-        pageLength: 10,
-        lengthMenu: [
-            [10, 25, 50, -1],
-            [10, 25, 50, 'Todos']
-        ],
+                                @if (!string.IsNullOrWhiteSpace(course.Description))
+                                {
+                                    <p class="text-muted mb-3 flex-grow-1">
+                                        @course.Description
+                                    </p>
+                                }
+                                else
+                                {
+                                    <p class="text-muted mb-3 flex-grow-1">
+                                        Curso sin descripción detallada.
+                                    </p>
+                                }
 
-        // Sin ordenar por default (dejamos que cada vista lo decida)
-        order: [],
+                                <div class="d-flex justify-content-between align-items-center mt-auto">
+                                    <div class="small text-muted">
+                                        <i class="ti ti-user-circle me-1"></i>
+                                        @course.Instructor?.FullName
+                                    </div>
+                                    <div class="btn-group">
+                                        <a asp-action="Details"
+                                           asp-route-id="@course.Id"
+                                           class="btn btn-outline-primary btn-sm">
+                                            <i class="ti ti-eye me-1"></i>
+                                            Ver detalles
+                                        </a>
 
-        // Evitar que calcule anchos raros
-        autoWidth: false,
+                                        @if (!isEnrolled)
+                                        {
+                                            <form asp-action="Enroll" method="post" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="courseId" value="@course.Id" />
+                                                <button type="submit" class="btn btn-primary btn-sm">
+                                                    <i class="ti ti-login me-1"></i>
+                                                    Inscribirme
+                                                </button>
+                                            </form>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
 
-        // Layout de controles (filtros arriba, info + paginación abajo)
-        dom:
-            "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
-            "<'row'<'col-sm-12'tr>>" +
-            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>"
-    });
+            @* Paginación *@
+            @if (totalPages > 1)
+            {
+                <div class="mt-4 d-flex justify-content-between align-items-center">
+                    <div class="text-muted small">
+                        Página @currentPage de @totalPages
+                    </div>
 
-    // ============================
-    // Auto-init básico
-    // ============================
-    // Cualquier tabla con data-datatable="true"
-    // se inicializa sola con los defaults globales.
-    $(function () {
-        $('table[data-datatable="true"]').each(function () {
-            var $table = $(this);
-
-            // Evitar doble inicialización
-            if ($.fn.dataTable.isDataTable($table)) {
-                return;
+                    <nav>
+                        <ul class="pagination mb-0">
+                            <li class="page-item @(currentPage <= 1 ? "disabled" : "")">
+                                <a class="page-link"
+                                   asp-action="Index"
+                                   asp-route-q="@search"
+                                   asp-route-page="@(currentPage - 1)">
+                                    Anterior
+                                </a>
+                            </li>
+                            <li class="page-item @(currentPage >= totalPages ? "disabled" : "")">
+                                <a class="page-link"
+                                   asp-action="Index"
+                                   asp-route-q="@search"
+                                   asp-route-page="@(currentPage + 1)">
+                                    Siguiente
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
             }
+        }
+    </div>
+</div>
 
-            $table.DataTable();
+@section Scripts {
+    <script>
+        $(function () {
+            var $input = $('#catalog-search-input');
+            if ($input.length === 0) return;
+
+            var timeoutId = null;
+
+            // Auto-submit con debounce mientras escribe
+            $input.on('input', function () {
+                var $form = $(this).closest('form');
+
+                if (timeoutId) {
+                    clearTimeout(timeoutId);
+                }
+
+                timeoutId = setTimeout(function () {
+                    $form.trigger('submit');
+                }, 400); // milisegundos de espera tras dejar de teclear
+            });
         });
-    });
-
-    // ============================
-    // Helpers globales SIGECES
-    // ============================
-    window.Sigeces = window.Sigeces || {};
-
-    // Inicialización explícita desde una vista
-    // Ejemplo: var dt = Sigeces.initDataTable('#tabla-cursos', { order: [[0, 'asc']] });
-    window.Sigeces.initDataTable = function (selector, options) {
-        if (!hasDataTables()) {
-            console.warn('SIGECES DataTables: DataTables no está cargado.');
-            return null;
-        }
-
-        var $table = $(selector);
-        if (!$table.length) {
-            console.warn('SIGECES DataTables: no se encontró la tabla: ' + selector);
-            return null;
-        }
-
-        // Evitar múltiple inicialización
-        if ($.fn.dataTable.isDataTable($table)) {
-            return $table.DataTable();
-        }
-
-        return $table.DataTable(options || {});
-    };
-
-    // Vincular filtros externos (inputs/select) a una columna
-    // Ejemplo:
-    //   var dt = Sigeces.initDataTable('#tabla', {});
-    //   Sigeces.bindColumnFilter(dt, '#filtroCategoria', 1, false);
-    window.Sigeces.bindColumnFilter = function (dataTable, filterSelector, columnIndex, useRegex) {
-        if (!dataTable) return;
-
-        var $filter = $(filterSelector);
-        if (!$filter.length) return;
-
-        var events = $filter.is('input') ? 'keyup change' : 'change';
-
-        $filter.on(events, function () {
-            var value = $(this).val() || '';
-
-            if (useRegex) {
-                dataTable
-                    .column(columnIndex)
-                    .search(value, true, false)
-                    .draw();
-            } else {
-                dataTable
-                    .column(columnIndex)
-                    .search(value, false, false)
-                    .draw();
-            }
-        });
-    };
-
-})(window, window.jQuery);
+    </script>
+}

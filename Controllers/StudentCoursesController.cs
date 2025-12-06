@@ -22,52 +22,49 @@ namespace SIGECES.Controllers
 
         // Catálogo de cursos disponibles
         // GET: StudentCourses
-        // Catálogo de cursos para estudiantes con búsqueda + paginación
-        public async Task<IActionResult> Index(string? q, int page = 1, int pageSize = 9)
+        // Catálogo de cursos para estudiantes con búsqueda + filtros cliente (sin paginación servidor)
+        public async Task<IActionResult> Index(string? q)
         {
             var studentId = GetCurrentUserId();
             if (studentId == null)
                 return Unauthorized();
 
+            // Cursos donde el estudiante ya está inscrito
             var enrolledCourseIds = await _context.Enrollments
                 .Where(e => e.StudentId == studentId.Value)
                 .Select(e => e.CourseId)
                 .ToListAsync();
 
+            // Query base de cursos activos
             var coursesQuery = _context.Courses
                 .Include(c => c.Category)
                 .Include(c => c.Instructor)
                 .Where(c => c.IsActive)
                 .AsQueryable();
 
+            // Filtro opcional en servidor (para no traer pura basura)
+            string? originalSearch = q;
             if (!string.IsNullOrWhiteSpace(q))
             {
-                q = q.Trim();
-                coursesQuery = coursesQuery.Where(c =>
-                    c.Title.Contains(q) ||
-                    (c.Category != null && c.Category.Name.Contains(q)) ||
-                    (c.Instructor != null && c.Instructor.FullName.Contains(q)));
-            }
+                var term = q.Trim().ToLower();
 
-            var totalItems = await coursesQuery.CountAsync();
+                coursesQuery = coursesQuery.Where(c =>
+                    c.Title.ToLower().Contains(term) ||
+                    (c.Description != null && c.Description.ToLower().Contains(term)) ||
+                    (c.Category != null && c.Category.Name.ToLower().Contains(term)) ||
+                    (c.Instructor != null && c.Instructor.FullName.ToLower().Contains(term)));
+            }
 
             var courses = await coursesQuery
                 .OrderBy(c => c.Category!.Name)
                 .ThenBy(c => c.Title)
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
                 .ToListAsync();
 
             ViewBag.EnrolledCourseIds = enrolledCourseIds;
-            ViewBag.Search = q;
-            ViewBag.Page = page;
-            ViewBag.PageSize = pageSize;
-            ViewBag.TotalItems = totalItems;
-            ViewBag.TotalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+            ViewBag.Search = originalSearch ?? string.Empty;
 
             return View(courses);
         }
-
 
 
         // Detalle de un curso (info + lecciones)

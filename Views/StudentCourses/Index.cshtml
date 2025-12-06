@@ -2,13 +2,26 @@
 
 @{
     ViewData["Title"] = "Catálogo de cursos";
+
     var enrolledIds = ViewBag.EnrolledCourseIds as List<int> ?? new List<int>();
     string search = ViewBag.Search as string ?? string.Empty;
-    int currentPage = ViewBag.Page is int ? (int)ViewBag.Page : 1;
-    int totalPages = ViewBag.TotalPages is int ? (int)ViewBag.TotalPages : 1;
+
+    var coursesList = Model?.ToList() ?? new List<SIGECES.Models.Course>();
+
+    var categoryNames = coursesList
+        .Where(c => c.Category != null && !string.IsNullOrWhiteSpace(c.Category.Name))
+        .Select(c => c.Category!.Name!)
+        .Distinct()
+        .OrderBy(n => n)
+        .ToList();
+
+    var instructorNames = coursesList
+        .Where(c => c.Instructor != null && !string.IsNullOrWhiteSpace(c.Instructor.FullName))
+        .Select(c => c.Instructor!.FullName!)
+        .Distinct()
+        .OrderBy(n => n)
+        .ToList();
 }
-
-
 
 <div class="page-header d-print-none mb-3">
     <div class="row align-items-center">
@@ -34,50 +47,100 @@
 
 <div class="card">
     <div class="card-header">
-        <form method="get" class="row g-2 w-100">
-            <div class="col-md-6">
+        <div class="row g-2 w-100 align-items-end">
+            <!-- Búsqueda libre -->
+            <div class="col-md-4">
+                <label class="form-label small mb-1">Buscar</label>
                 <div class="input-icon">
                     <span class="input-icon-addon">
                         <i class="ti ti-search"></i>
                     </span>
                     <input type="text"
-                           name="q"
+                           id="catalog-search-input"
                            value="@search"
-                           class="form-control"
-                           placeholder="Buscar por título, categoría o instructor..." />
+                           class="form-control form-control-sm"
+                           placeholder="Título, categoría, instructor, descripción..." />
                 </div>
             </div>
+
+            <!-- Filtro por categoría -->
             <div class="col-md-3">
-                <button type="submit" class="btn btn-outline-secondary w-100">
-                    <i class="ti ti-filter me-1"></i>
-                    Aplicar filtros
-                </button>
+                <label class="form-label small mb-1">Categoría</label>
+                <select id="catalog-category-filter"
+                        class="form-select form-select-sm">
+                    <option value="">Todas</option>
+                    @foreach (var name in categoryNames)
+                    {
+                        <option value="@name">@name</option>
+                    }
+                </select>
             </div>
-        </form>
+
+            <!-- Filtro por instructor -->
+            <div class="col-md-3">
+                <label class="form-label small mb-1">Instructor</label>
+                <select id="catalog-instructor-filter"
+                        class="form-select form-select-sm">
+                    <option value="">Todos</option>
+                    @foreach (var name in instructorNames)
+                    {
+                        <option value="@name">@name</option>
+                    }
+                </select>
+            </div>
+
+            <!-- Filtro por estado (inscrito / disponible) -->
+            <div class="col-md-2">
+                <label class="form-label small mb-1">Estado</label>
+                <select id="catalog-status-filter"
+                        class="form-select form-select-sm">
+                    <option value="">Todos</option>
+                    <option value="disponible">Solo disponibles</option>
+                    <option value="inscrito">Solo inscritos</option>
+                </select>
+            </div>
+        </div>
     </div>
 
     <div class="card-body">
-        @if (!Model.Any())
+        @if (!coursesList.Any())
         {
             <div class="text-center text-muted py-5">
                 <i class="ti ti-mood-empty mb-2" style="font-size: 2rem;"></i>
-                <div>No se encontraron cursos con los filtros actuales.</div>
+                <div>No hay cursos disponibles en este momento.</div>
             </div>
         }
         else
         {
-            <div class="row row-cards">
-                @foreach (var course in Model)
+            <div class="mb-2 text-muted small">
+                @coursesList.Count() cursos en total
+            </div>
+
+            <!-- Mensaje cuando los filtros no encuentran nada -->
+            <div id="catalog-empty-message" class="text-center text-muted py-5 d-none">
+                <i class="ti ti-mood-empty mb-2" style="font-size: 2rem;"></i>
+                <div>No se encontraron cursos con los filtros actuales.</div>
+            </div>
+
+            <!-- Cards -->
+            <div class="row row-cards js-course-cards-container">
+                @foreach (var course in coursesList)
                 {
                     var isEnrolled = enrolledIds.Contains(course.Id);
+                    var categoryName = course.Category?.Name ?? "";
+                    var instructorName = course.Instructor?.FullName ?? "";
+                    var statusValue = isEnrolled ? "inscrito" : "disponible";
 
-                    <div class="col-md-6 col-lg-4">
+                    <div class="col-md-6 col-lg-4 js-course-card"
+                         data-category="@categoryName"
+                         data-instructor="@instructorName"
+                         data-status="@statusValue">
                         <div class="card h-100 shadow-sm border-0">
                             <div class="card-body d-flex flex-column">
                                 <div class="d-flex justify-content-between align-items-start mb-2">
                                     <div>
                                         <div class="text-muted text-uppercase fs-6">
-                                            @course.Category?.Name
+                                            @categoryName
                                         </div>
                                         <h3 class="card-title mb-0">
                                             @course.Title
@@ -105,7 +168,7 @@
                                 <div class="d-flex justify-content-between align-items-center mt-auto">
                                     <div class="small text-muted">
                                         <i class="ti ti-user-circle me-1"></i>
-                                        @course.Instructor?.FullName
+                                        @instructorName
                                     </div>
                                     <div class="btn-group">
                                         <a asp-action="Details"
@@ -134,37 +197,160 @@
                 }
             </div>
 
-            @* Paginación *@
-            @if (totalPages > 1)
-            {
-                <div class="mt-4 d-flex justify-content-between align-items-center">
-                    <div class="text-muted small">
-                        Página @currentPage de @totalPages
-                    </div>
-
-                    <nav>
-                        <ul class="pagination mb-0">
-                            <li class="page-item @(currentPage <= 1 ? "disabled" : "")">
-                                <a class="page-link"
-                                   asp-action="Index"
-                                   asp-route-q="@search"
-                                   asp-route-page="@(currentPage - 1)">
-                                    Anterior
-                                </a>
-                            </li>
-                            <li class="page-item @(currentPage >= totalPages ? "disabled" : "")">
-                                <a class="page-link"
-                                   asp-action="Index"
-                                   asp-route-q="@search"
-                                   asp-route-page="@(currentPage + 1)">
-                                    Siguiente
-                                </a>
-                            </li>
-
-                        </ul>
-                    </nav>
+            <!-- Paginación en cliente -->
+            <div class="mt-4 d-flex justify-content-between align-items-center" id="catalog-pager" style="display:none;">
+                <div class="text-muted small" id="catalog-page-info">
+                    <!-- Se llena vía JS -->
                 </div>
-            }
+
+                <nav>
+                    <ul class="pagination mb-0">
+                        <li class="page-item disabled">
+                            <button class="page-link" type="button" id="catalog-prev">
+                                Anterior
+                            </button>
+                        </li>
+                        <li class="page-item disabled">
+                            <button class="page-link" type="button" id="catalog-next">
+                                Siguiente
+                            </button>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
         }
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            var $search = $('#catalog-search-input');
+            var $category = $('#catalog-category-filter');
+            var $instructor = $('#catalog-instructor-filter');
+            var $status = $('#catalog-status-filter');
+            var $cards = $('.js-course-card');
+            var $emptyMsg = $('#catalog-empty-message');
+            var $pager = $('#catalog-pager');
+            var $pageInfo = $('#catalog-page-info');
+            var $prev = $('#catalog-prev');
+            var $next = $('#catalog-next');
+
+            if ($cards.length === 0) {
+                return;
+            }
+
+            var pageSize = 9; // 👈 cambia esto si quieres más/menos cards por página
+            var currentPage = 1;
+
+            // Marca inicial: todos "machan"
+            $cards.each(function () {
+                $(this).data('match', true);
+            });
+
+            function renderPage() {
+                var $matched = $cards.filter(function () {
+                    return $(this).data('match') === true;
+                });
+
+                var total = $matched.length;
+
+                if (total === 0) {
+                    $cards.hide();
+                    $pager.hide();
+                    $emptyMsg.removeClass('d-none');
+                    $pageInfo.text('0 cursos encontrados');
+                    return;
+                }
+
+                $emptyMsg.addClass('d-none');
+
+                var totalPages = Math.ceil(total / pageSize);
+                if (currentPage > totalPages) {
+                    currentPage = totalPages;
+                }
+                if (currentPage < 1) {
+                    currentPage = 1;
+                }
+
+                // Ocultamos todas
+                $cards.hide();
+
+                var start = (currentPage - 1) * pageSize;
+                var end = start + pageSize;
+
+                $matched.each(function (index) {
+                    if (index >= start && index < end) {
+                        $(this).show();
+                    }
+                });
+
+                // Actualizar info de paginación
+                $pager.show();
+                $pageInfo.text('Página ' + currentPage + ' de ' + totalPages + ' (' + total + ' cursos encontrados)');
+
+                $prev.closest('.page-item').toggleClass('disabled', currentPage === 1);
+                $next.closest('.page-item').toggleClass('disabled', currentPage === totalPages);
+            }
+
+            function aplicarFiltrosCatalogo() {
+                var term = ($search.val() || '').toLowerCase().trim();
+                var cat = ($category.val() || '').toLowerCase();
+                var inst = ($instructor.val() || '').toLowerCase();
+                var status = ($status.val() || '').toLowerCase();
+
+                $cards.each(function () {
+                    var $card = $(this);
+
+                    var cardCat = (($card.data('category') || '') + '').toLowerCase();
+                    var cardInst = (($card.data('instructor') || '') + '').toLowerCase();
+                    var cardStatus = (($card.data('status') || '') + '').toLowerCase();
+                    var text = $card.text().toLowerCase();
+
+                    var matchesTerm = !term || text.indexOf(term) !== -1;
+                    var matchesCat = !cat || cardCat === cat;
+                    var matchesInst = !inst || cardInst === inst;
+                    var matchesStatus = !status || cardStatus === status;
+
+                    var visible = matchesTerm && matchesCat && matchesInst && matchesStatus;
+                    $card.data('match', visible);
+                });
+
+                currentPage = 1;
+                renderPage();
+            }
+
+            // Eventos
+            $search.on('input', function () {
+                aplicarFiltrosCatalogo();
+            });
+
+            $category.on('change', function () {
+                aplicarFiltrosCatalogo();
+            });
+
+            $instructor.on('change', function () {
+                aplicarFiltrosCatalogo();
+            });
+
+            $status.on('change', function () {
+                aplicarFiltrosCatalogo();
+            });
+
+            $prev.on('click', function () {
+                if ($(this).closest('.page-item').hasClass('disabled')) return;
+                currentPage--;
+                renderPage();
+            });
+
+            $next.on('click', function () {
+                if ($(this).closest('.page-item').hasClass('disabled')) return;
+                currentPage++;
+                renderPage();
+            });
+
+            // Primera renderizada (con posible búsqueda inicial desde servidor)
+            aplicarFiltrosCatalogo();
+        });
+    </script>
+}

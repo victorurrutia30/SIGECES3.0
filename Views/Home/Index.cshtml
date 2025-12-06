@@ -1,455 +1,553 @@
 ﻿@{
     ViewData["Title"] = "Inicio";
     var isAuthenticated = User?.Identity?.IsAuthenticated == true;
-}
 
-<div class="page-header d-print-none mb-3">
-    <div class="row align-items-center">
-        <div class="col">
-            <div class="page-pretitle">
-                SIGECES UTEC
-            </div>
-            <h2 class="page-title">
-                Sistema de gestión de cursos extracurriculares
-            </h2>
-        </div>
-    </div>
-</div>
+    /* Activa el modo Landing (Full Width) */
+    if (!isAuthenticated)
+    {
+        ViewData["PageType"] = "Landing";
+    }
+}
 
 @if (!isAuthenticated)
 {
-    <div class="row align-items-center mb-4">
-        <div class="col-lg-7">
-            <h2 class="mb-2">
-                Gestiona los cursos extracurriculares de la UTEC desde un solo lugar
-            </h2>
-            <p class="text-muted">
-                SIGECES centraliza la oferta de cursos, facilita la inscripción de estudiantes
-                y permite a docentes y coordinación académica dar seguimiento al avance.
-            </p>
+    /* ==================================================================================
+       LANDING PAGE (NO LOGUEADO) - MODO CLARO (Visible y Elegante)
+       ================================================================================== */
+    <div class="landing-wrapper bg-white">
 
-            <div class="d-flex flex-wrap gap-2 mt-3">
-                <a asp-controller="Account" asp-action="Login" class="btn btn-primary">
-                    <i class="ti ti-login me-1"></i>
-                    Iniciar sesión
-                </a>
-                <a href="#" class="btn btn-outline-secondary disabled">
-                    Demo pública (próximamente)
-                </a>
-            </div>
+        <section class="hero-section position-relative">
+            <div class="container-xl">
+                <div class="row align-items-center">
+                    <div class="col-lg-6 animate-fade-in py-5">
+                        <div class="d-inline-flex align-items-center mb-4 px-3 py-1 rounded-pill bg-primary-lt border border-primary-lt">
+                            <span class="status-dot status-dot-animated bg-yellow me-2"></span>
+                            <span class="text-utec fw-bold small">PLATAFORMA SIGECES</span>
+                        </div>
 
-            <ul class="list-unstyled mt-4 text-muted">
-                <li>• Catálogo único de cursos extracurriculares.</li>
-                <li>• Inscripciones controladas por docente o administración.</li>
-                <li>• Reportes de avance por estudiante, curso y docente.</li>
-            </ul>
-        </div>
+                        <h1 class="display-3 fw-bold mb-3 text-utec lh-1">
+                            Excelencia Académica <br />
+                            <span class="text-gold">Más allá del aula.</span>
+                        </h1>
 
-        <div class="col-lg-5 mt-3 mt-lg-0">
-            <div class="card shadow-sm border-0">
-                <div class="card-body">
-                    <h3 class="card-title mb-3">¿Para quién es SIGECES?</h3>
+                        <p class="lead text-secondary mb-5" style="max-width: 550px;">
+                            Gestiona tu desarrollo profesional con la plataforma oficial de cursos extracurriculares de la Universidad Tecnológica de El Salvador.
+                        </p>
 
-                    <div class="mb-3 d-flex">
-                        <span class="avatar bg-primary-lt me-2">
-                            <i class="ti ti-school"></i>
-                        </span>
-                        <div>
-                            <div class="fw-semibold">Estudiantes</div>
-                            <div class="text-muted small">
-                                Exploran el catálogo, se inscriben y llevan control de sus cursos.
-                            </div>
+                        <div class="d-flex flex-wrap gap-3">
+                            <a asp-controller="Account" asp-action="Login" class="btn btn-yellow btn-lg px-4 shadow-sm text-dark">
+                                <i class="ti ti-login me-2"></i> Portal Académico
+                            </a>
+                            
                         </div>
                     </div>
 
-                    <div class="mb-3 d-flex">
-                        <span class="avatar bg-green-lt me-2">
-                            <i class="ti ti-chalkboard"></i>
-                        </span>
-                        <div>
-                            <div class="fw-semibold">Docentes</div>
-                            <div class="text-muted small">
-                                Gestionan sus cursos, lecciones y seguimiento del grupo.
+                    <div class="col-lg-6 d-none d-lg-block position-relative">
+                        <div class="position-absolute top-50 start-50 translate-middle rounded-circle opacity-10"
+                             style="width: 400px; height: 400px; background-color: var(--utec-primary); filter: blur(80px); z-index: 0;"></div>
+
+                        <div class="row g-4 position-relative" style="z-index: 1;">
+                            <div class="col-6 text-end align-self-end">
+                                <div class="card border-0 shadow-lg mb-4 floating-element bg-white">
+                                    <div class="card-body p-3 text-start">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <span class="avatar bg-red-lt rounded"><i class="ti ti-brand-python"></i></span>
+                                            <div>
+                                                <div class="fw-bold text-dark">Data Science</div>
+                                                <div class="text-muted small">Inscripción Activa</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card border-0 shadow-lg floating-element delay-1 bg-white">
+                                    <div class="card-body p-3 text-start">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <span class="fw-bold fs-2 text-dark">100%</span>
+                                            <i class="ti ti-circle-check-filled text-success fs-2"></i>
+                                        </div>
+                                        <div class="text-muted small">Asistencia completada</div>
+                                        <div class="progress progress-sm mt-2">
+                                            <div class="progress-bar bg-success" style="width: 100%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-6">
+                                <div class="card border-0 shadow-lg mt-5 floating-element delay-2 bg-white text-center">
+                                    <div class="card-body p-4">
+                                        <div class="avatar avatar-lg bg-yellow-lt rounded-circle mb-3">
+                                            <i class="ti ti-certificate"></i>
+                                        </div>
+                                        <div class="fw-bold fs-3 text-utec">Diploma</div>
+                                        <div class="text-muted small mb-2">Certificado Oficial</div>
+                                        <span class="badge bg-green-lt">Descargar PDF</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </section>
 
-                    <div class="d-flex">
-                        <span class="avatar bg-yellow-lt me-2">
-                            <i class="ti ti-report-analytics"></i>
-                        </span>
-                        <div>
-                            <div class="fw-semibold">Administración</div>
-                            <div class="text-muted small">
-                                Visualizan indicadores globales y exportan reportes.
+        <section id="features" class="py-6 bg-light">
+            <div class="container-xl">
+                <div class="text-center mb-6 animate-on-scroll">
+                    <h2 class="section-title fw-bold text-utec">Ecosistema Integral</h2>
+                    <p class="text-muted">Herramientas diseñadas para potenciar a toda la comunidad universitaria.</p>
+                </div>
+
+                <div class="row row-cards">
+                    <div class="col-md-4 animate-on-scroll delay-100">
+                        <div class="card border-0 shadow-sm bg-white text-center hover-scale h-100">
+                            <div class="card-body">
+                                <div class="feature-icon-box bg-red-lt text-utec">
+                                    <i class="ti ti-school"></i>
+                                </div>
+                                <h3 class="fw-bold text-dark">Estudiantes</h3>
+                                <p class="text-muted">Inscripción en línea, historial de cursos y descarga automática de diplomas.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 animate-on-scroll delay-200">
+                        <div class="card border-0 shadow-sm bg-white text-center hover-scale h-100">
+                            <div class="card-body">
+                                <div class="feature-icon-box bg-yellow-lt text-yellow">
+                                    <i class="ti ti-chalkboard"></i>
+                                </div>
+                                <h3 class="fw-bold text-dark">Docentes</h3>
+                                <p class="text-muted">Gestión de listados, control de asistencia digital y evaluación de participantes.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 animate-on-scroll delay-300">
+                        <div class="card border-0 shadow-sm bg-white text-center hover-scale h-100">
+                            <div class="card-body">
+                                <div class="feature-icon-box bg-blue-lt text-primary">
+                                    <i class="ti ti-chart-pie"></i>
+                                </div>
+                                <h3 class="fw-bold text-dark">Administrativos</h3>
+                                <p class="text-muted">Paneles de control con métricas en tiempo real y reportes ejecutivos.</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-}
-else if (User.IsInRole("Admin"))
-{
-    <!-- Métricas principales Admin -->
-    <div class="row mb-4">
-        <div class="col-md-3 mb-3">
-            <div class="card h-100">
-                <div class="card-body text-center">
-                    <div class="text-muted mb-1">Usuarios</div>
-                    <div class="h1 mb-1">@ViewBag.TotalUsers</div>
-                    <div class="text-muted small">Estudiantes activos: @ViewBag.TotalStudents</div>
-                    <div class="text-muted small">Instructores activos: @ViewBag.TotalInstructors</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3 mb-3">
-            <div class="card h-100">
-                <div class="card-body text-center">
-                    <div class="text-muted mb-1">Cursos</div>
-                    <div class="h1 mb-1">@ViewBag.TotalCourses</div>
-                    <div class="text-muted small">Activos: @ViewBag.ActiveCourses</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3 mb-3">
-            <div class="card h-100">
-                <div class="card-body text-center">
-                    <div class="text-muted mb-1">Inscripciones</div>
-                    <div class="h1 mb-1">@ViewBag.TotalEnrollments</div>
-                    <div class="text-muted small">Completadas: @ViewBag.CompletedEnrollments</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3 mb-3">
-            <div class="card h-100">
-                <div class="card-body text-center">
-                    <div class="text-muted mb-1">% Finalización global</div>
-                    <div class="h1 mb-1">@ViewBag.GlobalCompletionPercent%</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Charts Admin fila 1 -->
-    <div class="row mb-4">
-        <div class="col-12 col-lg-6 mb-3">
-            <div class="card h-100">
-                <div class="card-header">
-                    <h3 class="card-title">Usuarios por rol</h3>
-                </div>
-                <div class="card-body">
-                    <div id="admin-users-by-role-chart"
-                         data-series='@Html.Raw(ViewBag.AdminUsersByRoleSeries ?? "[]")'
-                         data-labels='@Html.Raw(ViewBag.AdminUsersByRoleLabels ?? "[]")'>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-lg-6 mb-3">
-            <div class="card h-100">
-                <div class="card-header">
-                    <h3 class="card-title">Inscripciones por estado</h3>
-                </div>
-                <div class="card-body">
-                    <div id="admin-enrollments-status-chart"
-                         data-series='@Html.Raw(ViewBag.AdminEnrollmentsStatusSeries ?? "[]")'
-                         data-labels='@Html.Raw(ViewBag.AdminEnrollmentsStatusLabels ?? "[]")'>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Charts Admin fila 2 -->
-    <div class="row mb-4">
-        <div class="col-12 col-lg-6 mb-3">
-            <div class="card h-100">
-                <div class="card-header">
-                    <h3 class="card-title">Inscripciones por curso</h3>
-                </div>
-                <div class="card-body">
-                    <div id="admin-enrollments-per-course-chart"
-                         data-series='@Html.Raw(ViewBag.AdminEnrollmentsPerCourseSeries ?? "[]")'
-                         data-categories='@Html.Raw(ViewBag.AdminEnrollmentsPerCourseCategories ?? "[]")'>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-lg-6 mb-3">
-            <div class="card h-100">
-                <div class="card-header">
-                    <h3 class="card-title">Inscripciones por mes</h3>
-                </div>
-                <div class="card-body">
-                    <div id="admin-enrollments-by-month-chart"
-                         data-series='@Html.Raw(ViewBag.AdminEnrollmentsByMonthSeries ?? "[]")'
-                         data-categories='@Html.Raw(ViewBag.AdminEnrollmentsByMonthCategories ?? "[]")'>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <h4 class="mb-2">Accesos rápidos</h4>
-    <div class="list-group mb-3">
-        <a asp-controller="Courses" asp-action="Index" class="list-group-item list-group-item-action">
-            Gestionar cursos
-        </a>
-        <a asp-controller="CourseCategories" asp-action="Index" class="list-group-item list-group-item-action">
-            Categorías de cursos
-        </a>
-        <a asp-controller="Users" asp-action="Index" class="list-group-item list-group-item-action">
-            Usuarios
-        </a>
-        <a asp-controller="AdminReports" asp-action="Index" class="list-group-item list-group-item-action">
-            Reportes y exportaciones (CSV)
-        </a>
-    </div>
-}
-else if (User.IsInRole("Instructor"))
-{
-    <h2 class="mb-4">Panel del Instructor</h2>
-    <p class="text-muted">Resumen de tus cursos y el avance de tus estudiantes.</p>
-
-    <!-- Métricas principales Instructor -->
-    <div class="row mb-4">
-        <div class="col-md-3 mb-3">
-            <div class="card h-100">
-                <div class="card-body text-center">
-                    <div class="text-muted mb-1">Mis cursos</div>
-                    <div class="h1 mb-1">@ViewBag.MyCoursesCount</div>
-                    <div class="text-muted small">Total creados</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3 mb-3">
-            <div class="card h-100">
-                <div class="card-body text-center">
-                    <div class="text-muted mb-1">Cursos activos</div>
-                    <div class="h1 mb-1">@ViewBag.MyActiveCourses</div>
-                    <div class="text-muted small">Visibles para estudiantes</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3 mb-3">
-            <div class="card h-100">
-                <div class="card-body text-center">
-                    <div class="text-muted mb-1">Inscripciones</div>
-                    <div class="h1 mb-1">@ViewBag.MyTotalEnrollments</div>
-                    <div class="text-muted small">En todos tus cursos</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3 mb-3">
-            <div class="card h-100">
-                <div class="card-body text-center">
-                    <div class="text-muted mb-1">Finalización global</div>
-                    <div class="h1 mb-1">@ViewBag.MyCompletionPercent%</div>
-                    <div class="text-muted small">Completados / inscritos</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Charts Instructor fila 1 -->
-    <div class="row mb-4">
-        <div class="col-12 col-lg-6 mb-3">
-            <div class="card h-100">
-                <div class="card-header">
-                    <h3 class="card-title">Inscripciones por curso</h3>
-                </div>
-                <div class="card-body">
-                    <div id="instructor-enrollments-per-course-chart"
-                         data-series='@Html.Raw(ViewBag.InstructorEnrollmentsPerCourseSeries ?? "[]")'
-                         data-categories='@Html.Raw(ViewBag.InstructorEnrollmentsPerCourseCategories ?? "[]")'>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-lg-6 mb-3">
-            <div class="card h-100">
-                <div class="card-header">
-                    <h3 class="card-title">Inscripciones por estado</h3>
-                </div>
-                <div class="card-body">
-                    <div id="instructor-enrollments-status-chart"
-                         data-series='@Html.Raw(ViewBag.InstructorEnrollmentsStatusSeries ?? "[]")'
-                         data-labels='@Html.Raw(ViewBag.InstructorEnrollmentsStatusLabels ?? "[]")'>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Charts Instructor fila 2 -->
-    <div class="row mb-4">
-        <div class="col-12 col-lg-6 mb-3">
-            <div class="card h-100">
-                <div class="card-header">
-                    <h3 class="card-title">% de finalización por curso</h3>
-                </div>
-                <div class="card-body">
-                    <div id="instructor-completion-per-course-chart"
-                         data-series='@Html.Raw(ViewBag.InstructorCompletionPerCourseSeries ?? "[]")'
-                         data-categories='@Html.Raw(ViewBag.InstructorCompletionPerCourseCategories ?? "[]")'>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-lg-6 mb-3">
-            <div class="card h-100">
-                <div class="card-header">
-                    <h3 class="card-title">Inscripciones por mes</h3>
-                </div>
-                <div class="card-body">
-                    <div id="instructor-enrollments-by-month-chart"
-                         data-series='@Html.Raw(ViewBag.InstructorEnrollmentsByMonthSeries ?? "[]")'
-                         data-categories='@Html.Raw(ViewBag.InstructorEnrollmentsByMonthCategories ?? "[]")'>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <h4>Acciones rápidas</h4>
-    <div class="list-group mb-3">
-        <a asp-controller="Courses" asp-action="Index" class="list-group-item list-group-item-action">
-            Ver / editar mis cursos
-        </a>
-        <a asp-controller="InstructorReports" asp-action="Index" class="list-group-item list-group-item-action">
-            Reportes de mis cursos (CSV y KPIs)
-        </a>
-    </div>
-}
-else if (User.IsInRole("Student"))
-{
-    <h3 class="mb-3">Panel de estudiante</h3>
-    <p class="text-muted">Resumen de tu avance en los cursos extracurriculares.</p>
-
-    <!-- Métricas principales Student -->
-    <div class="row mb-4">
-        <div class="col-md-3 mb-3">
-            <div class="card h-100">
-                <div class="card-body text-center">
-                    <div class="text-muted mb-1">Cursos inscritos</div>
-                    <div class="h1 mb-1">@ViewBag.MyTotalEnrollments_Student</div>
-                    <div class="text-muted small">Total de inscripciones</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3 mb-3">
-            <div class="card h-100">
-                <div class="card-body text-center">
-                    <div class="text-muted mb-1">En progreso</div>
-                    <div class="h1 mb-1">@ViewBag.MyInProgressEnrollments_Student</div>
-                    <div class="text-muted small">Cursos activos</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3 mb-3">
-            <div class="card h-100">
-                <div class="card-body text-center">
-                    <div class="text-muted mb-1">Completados</div>
-                    <div class="h1 mb-1">@ViewBag.MyCompletedEnrollments_Student</div>
-                    <div class="text-muted small">Cursos finalizados</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3 mb-3">
-            <div class="card h-100">
-                <div class="card-body text-center">
-                    <div class="text-muted mb-1">Avance en lecciones</div>
-                    <div class="h1 mb-1">@ViewBag.MyLessonsCompletionPercent_Student%</div>
-                    <div class="text-muted small">
-                        @ViewBag.MyCompletedLessons_Student / @ViewBag.MyTotalLessons_Student lecciones
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Charts Student -->
-    <div class="row mb-4">
-        <div class="col-12 col-lg-6 mb-3">
-            <div class="card h-100">
-                <div class="card-header">
-                    <h3 class="card-title">Estado de mis cursos</h3>
-                </div>
-                <div class="card-body">
-                    <div id="student-courses-status-chart"
-                         data-series='@Html.Raw(ViewBag.StudentCoursesStatusSeries ?? "[]")'
-                         data-labels='@Html.Raw(ViewBag.StudentCoursesStatusLabels ?? "[]")'>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-lg-6 mb-3">
-            <div class="card h-100">
-                <div class="card-header">
-                    <h3 class="card-title">Progreso global de lecciones</h3>
-                </div>
-                <div class="card-body">
-                    <div id="student-lessons-progress-chart"
-                         data-series='@Html.Raw(ViewBag.StudentLessonsProgressSeries ?? "[]")'>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <h4>Acciones rápidas</h4>
-    <div class="row">
-        <div class="col-md-6 mb-3">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Catálogo de cursos</h5>
-                    <p class="card-text">
-                        Ver todos los cursos disponibles en SIGECES.
-                    </p>
-                    <a asp-controller="StudentCourses" asp-action="Index" class="btn btn-primary">
-                        Ir al catálogo
-                    </a>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6 mb-3">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5 class="card-title">Mis cursos</h5>
-                    <p class="card-text">
-                        Revisa tus inscripciones activas y cursos en progreso.
-                    </p>
-                    <a asp-controller="StudentCourses" asp-action="MyCourses" class="btn btn-outline-primary">
-                        Ver mis cursos
-                    </a>
-                </div>
-            </div>
-        </div>
+        </section>
     </div>
 }
 else
 {
-    <p>No se pudo determinar tu rol. Contacta al administrador.</p>
+    /* ==================================================================================
+       DASHBOARDS (LOGUEADO) - LÓGICA DE NEGOCIO ORIGINAL
+       ================================================================================== */
+
+    <div class="page-header d-print-none mb-3">
+        <div class="row align-items-center">
+            <div class="col">
+                <div class="page-pretitle">
+                    SIGECES UTEC
+                </div>
+                <h2 class="page-title">
+                    Sistema de gestión de cursos extracurriculares
+                </h2>
+            </div>
+        </div>
+    </div>
+
+    @if (User.IsInRole("Admin"))
+    {
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <div class="text-muted mb-1">Usuarios</div>
+                        <div class="h1 mb-1">@ViewBag.TotalUsers</div>
+                        <div class="text-muted small">Estudiantes: @ViewBag.TotalStudents</div>
+                        <div class="text-muted small">Instructores: @ViewBag.TotalInstructors</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <div class="text-muted mb-1">Cursos</div>
+                        <div class="h1 mb-1">@ViewBag.TotalCourses</div>
+                        <div class="text-muted small">Activos: @ViewBag.ActiveCourses</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <div class="text-muted mb-1">Inscripciones</div>
+                        <div class="h1 mb-1">@ViewBag.TotalEnrollments</div>
+                        <div class="text-muted small">Completadas: @ViewBag.CompletedEnrollments</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <div class="text-muted mb-1">Efectividad Global</div>
+                        <div class="h1 mb-1">@ViewBag.GlobalCompletionPercent%</div>
+                        <div class="text-muted small">Tasa de finalización</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-12 col-lg-6 mb-3">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h3 class="card-title">Distribución de Usuarios</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="admin-users-by-role-chart"
+                             data-series='@Html.Raw(ViewBag.AdminUsersByRoleSeries ?? "[]")'
+                             data-labels='@Html.Raw(ViewBag.AdminUsersByRoleLabels ?? "[]")'>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-6 mb-3">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h3 class="card-title">Estado de Inscripciones</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="admin-enrollments-status-chart"
+                             data-series='@Html.Raw(ViewBag.AdminEnrollmentsStatusSeries ?? "[]")'
+                             data-labels='@Html.Raw(ViewBag.AdminEnrollmentsStatusLabels ?? "[]")'>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-12 col-lg-6 mb-3">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h3 class="card-title">Top Cursos (Inscripciones)</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="admin-enrollments-per-course-chart"
+                             data-series='@Html.Raw(ViewBag.AdminEnrollmentsPerCourseSeries ?? "[]")'
+                             data-categories='@Html.Raw(ViewBag.AdminEnrollmentsPerCourseCategories ?? "[]")'>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-6 mb-3">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h3 class="card-title">Tendencia Mensual</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="admin-enrollments-by-month-chart"
+                             data-series='@Html.Raw(ViewBag.AdminEnrollmentsByMonthSeries ?? "[]")'
+                             data-categories='@Html.Raw(ViewBag.AdminEnrollmentsByMonthCategories ?? "[]")'>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h4 class="mb-2">Accesos rápidos</h4>
+        <div class="list-group mb-3">
+            <a asp-controller="Courses" asp-action="Index" class="list-group-item list-group-item-action">
+                <i class="ti ti-notebook me-2 text-muted"></i> Gestionar cursos
+            </a>
+            <a asp-controller="CourseCategories" asp-action="Index" class="list-group-item list-group-item-action">
+                <i class="ti ti-category me-2 text-muted"></i> Categorías de cursos
+            </a>
+            <a asp-controller="Users" asp-action="Index" class="list-group-item list-group-item-action">
+                <i class="ti ti-users me-2 text-muted"></i> Gestión de Usuarios
+            </a>
+            <a asp-controller="AdminReports" asp-action="Index" class="list-group-item list-group-item-action">
+                <i class="ti ti-file-analytics me-2 text-muted"></i> Reportes y Auditoría (CSV)
+            </a>
+        </div>
+    }
+    else if (User.IsInRole("Instructor"))
+    {
+        <h2 class="mb-4">Panel del Instructor</h2>
+        <div class="alert alert-info bg-white" role="alert">
+            <div class="d-flex">
+                <div><i class="ti ti-info-circle me-2"></i></div>
+                <div>Bienvenido al módulo docente. Aquí puedes gestionar el avance académico.</div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <div class="text-muted mb-1">Mis cursos</div>
+                        <div class="h1 mb-1">@ViewBag.MyCoursesCount</div>
+                        <div class="text-muted small">Total asignados</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <div class="text-muted mb-1">Cursos activos</div>
+                        <div class="h1 mb-1">@ViewBag.MyActiveCourses</div>
+                        <div class="text-muted small">Publicados</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <div class="text-muted mb-1">Total Estudiantes</div>
+                        <div class="h1 mb-1">@ViewBag.MyTotalEnrollments</div>
+                        <div class="text-muted small">Inscripciones activas</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <div class="text-muted mb-1">Tasa de Éxito</div>
+                        <div class="h1 mb-1">@ViewBag.MyCompletionPercent%</div>
+                        <div class="text-muted small">Estudiantes certificados</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-12 col-lg-6 mb-3">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h3 class="card-title">Estudiantes por curso</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="instructor-enrollments-per-course-chart"
+                             data-series='@Html.Raw(ViewBag.InstructorEnrollmentsPerCourseSeries ?? "[]")'
+                             data-categories='@Html.Raw(ViewBag.InstructorEnrollmentsPerCourseCategories ?? "[]")'>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-6 mb-3">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h3 class="card-title">Estado de inscripciones</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="instructor-enrollments-status-chart"
+                             data-series='@Html.Raw(ViewBag.InstructorEnrollmentsStatusSeries ?? "[]")'
+                             data-labels='@Html.Raw(ViewBag.InstructorEnrollmentsStatusLabels ?? "[]")'>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-12 col-lg-6 mb-3">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h3 class="card-title">Progreso Académico Promedio</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="instructor-completion-per-course-chart"
+                             data-series='@Html.Raw(ViewBag.InstructorCompletionPerCourseSeries ?? "[]")'
+                             data-categories='@Html.Raw(ViewBag.InstructorCompletionPerCourseCategories ?? "[]")'>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-6 mb-3">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h3 class="card-title">Historial de Inscripciones</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="instructor-enrollments-by-month-chart"
+                             data-series='@Html.Raw(ViewBag.InstructorEnrollmentsByMonthSeries ?? "[]")'
+                             data-categories='@Html.Raw(ViewBag.InstructorEnrollmentsByMonthCategories ?? "[]")'>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h4>Gestión Académica</h4>
+        <div class="list-group mb-3">
+            <a asp-controller="Courses" asp-action="Index" class="list-group-item list-group-item-action">
+                <i class="ti ti-edit me-2 text-muted"></i> Ver / editar mis cursos
+            </a>
+            <a asp-controller="InstructorReports" asp-action="Index" class="list-group-item list-group-item-action">
+                <i class="ti ti-download me-2 text-muted"></i> Descargar Listados y Reportes (CSV)
+            </a>
+        </div>
+    }
+    else if (User.IsInRole("Student"))
+    {
+        <h3 class="mb-3">Hola, @User.Identity.Name</h3>
+        <p class="text-muted">Aquí tienes un resumen de tu avance en los cursos extracurriculares.</p>
+
+        <div class="row mb-4">
+            <div class="col-md-3 mb-3">
+                <div class="card h-100 card-active">
+                    <div class="card-body text-center">
+                        <div class="text-muted mb-1">Inscripciones</div>
+                        <div class="h1 mb-1 text-primary">@ViewBag.MyTotalEnrollments_Student</div>
+                        <div class="text-muted small">Cursos totales</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <div class="text-muted mb-1">En curso</div>
+                        <div class="h1 mb-1 text-yellow">@ViewBag.MyInProgressEnrollments_Student</div>
+                        <div class="text-muted small">Pendientes de finalizar</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <div class="text-muted mb-1">Certificados</div>
+                        <div class="h1 mb-1 text-success">@ViewBag.MyCompletedEnrollments_Student</div>
+                        <div class="text-muted small">Cursos aprobados</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3 mb-3">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <div class="text-muted mb-1">Avance Lecciones</div>
+                        <div class="h1 mb-1">@ViewBag.MyLessonsCompletionPercent_Student%</div>
+                        <div class="text-muted small">
+                            @ViewBag.MyCompletedLessons_Student de @ViewBag.MyTotalLessons_Student
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-12 col-lg-6 mb-3">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h3 class="card-title">Estado de mis cursos</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="student-courses-status-chart"
+                             data-series='@Html.Raw(ViewBag.StudentCoursesStatusSeries ?? "[]")'
+                             data-labels='@Html.Raw(ViewBag.StudentCoursesStatusLabels ?? "[]")'>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-6 mb-3">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h3 class="card-title">Mi Curva de Aprendizaje</h3>
+                    </div>
+                    <div class="card-body">
+                        <div id="student-lessons-progress-chart"
+                             data-series='@Html.Raw(ViewBag.StudentLessonsProgressSeries ?? "[]")'>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h4>¿Qué quieres hacer hoy?</h4>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <div class="card h-100 hover-scale">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <span class="avatar bg-blue-lt me-3"><i class="ti ti-search"></i></span>
+                            <h5 class="card-title mb-0">Explorar Catálogo</h5>
+                        </div>
+                        <p class="card-text text-muted">
+                            Busca nuevos cursos extracurriculares disponibles para este ciclo e inscríbete.
+                        </p>
+                        <a asp-controller="StudentCourses" asp-action="Index" class="btn btn-primary w-100">
+                            Ir al Catálogo
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <div class="card h-100 hover-scale">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            <span class="avatar bg-yellow-lt me-3"><i class="ti ti-book"></i></span>
+                            <h5 class="card-title mb-0">Continuar Aprendiendo</h5>
+                        </div>
+                        <p class="card-text text-muted">
+                            Accede al aula virtual de tus cursos activos y revisa tu material.
+                        </p>
+                        <a asp-controller="StudentCourses" asp-action="MyCourses" class="btn btn-outline-primary w-100">
+                            Ver mis Cursos
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning">
+            <i class="ti ti-alert-triangle me-2"></i>
+            No se pudo determinar tu rol en el sistema. Por favor contacta al administrador.
+        </div>
+    }
 }
 
 @section Scripts {
     <script src="~/js/dashboard-admin.js" asp-append-version="true"></script>
     <script src="~/js/dashboard-instructor.js" asp-append-version="true"></script>
     <script src="~/js/dashboard-student.js" asp-append-version="true"></script>
+
+    @if (!isAuthenticated)
+    {
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.1 });
+
+                document.querySelectorAll('.animate-on-scroll, .animate-fade-in').forEach((el) => {
+                    observer.observe(el);
+                });
+
+                // Forzar entrada inmediata del hero text
+                setTimeout(() => document.querySelector('.animate-fade-in')?.classList.add('visible'), 100);
+            });
+        </script>
+    }
 }

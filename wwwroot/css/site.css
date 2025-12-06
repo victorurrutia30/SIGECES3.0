@@ -1,124 +1,210 @@
-/* Paleta UTEC global */
+/* ==========================================================================
+   1. VARIABLES Y CONFIGURACIÓN GLOBAL (UTEC THEME)
+   ========================================================================== */
 :root {
-    --utec-primary: #5D0A28;
-    --utec-primary-dark: #4a071f;
-    --utec-light-bg: #F8F9FA;
-    --utec-footer-bg: #343A40;
-    --utec-footer-text: #F8F9FA;
+    /* Paleta UTEC Oficial */
+    --utec-primary: #691C32; /* Guinda */
+    --utec-primary-dark: #4a0f20;
+    --utec-gold: #FDB913; /* Dorado */
+    --utec-gold-dark: #dca00f;
+    /* Sobreescritura Tabler */
+    --tblr-primary: var(--utec-primary);
+    --tblr-primary-rgb: 105, 28, 50;
+    --tblr-link-color: var(--utec-primary);
 }
 
-/* Tipografía / base parecida al template original */
-html {
-    font-size: 14px;
+body {
+    font-feature-settings: "cv03", "cv04", "cv11";
 }
 
-@media (min-width: 768px) {
-    html {
-        font-size: 16px;
+/* Utilidades UTEC */
+.text-utec {
+    color: var(--utec-primary) !important;
+}
+
+.text-gold {
+    color: var(--utec-gold) !important;
+}
+
+.bg-utec {
+    background-color: var(--utec-primary) !important;
+    color: #fff;
+}
+
+/* ==========================================================================
+   2. ESTILOS DE LANDING (LIGERO / WHITE THEME)
+   ========================================================================== */
+
+.landing-wrapper {
+    width: 100%;
+    overflow-x: hidden;
+    background-color: #ffffff; /* Asegura fondo blanco puro */
+}
+
+/* HERO SECTION - Limpio y Moderno */
+.hero-section {
+    position: relative;
+    padding: 6rem 0;
+    /* Fondo blanco con un sutil degradado gris muy claro abajo */
+    background: linear-gradient(to bottom, #ffffff 0%, #f8f9fa 100%);
+}
+
+/* Badge de estado personalizado para UTEC */
+.bg-primary-lt {
+    background-color: rgba(105, 28, 50, 0.1) !important; /* Guinda muy suave */
+    color: var(--utec-primary) !important;
+}
+
+/* Botón Amarillo UTEC */
+.btn-yellow {
+    background-color: var(--utec-gold);
+    color: #2b0510;
+    font-weight: 600;
+    border: none;
+    transition: transform 0.2s;
+}
+
+    .btn-yellow:hover {
+        background-color: var(--utec-gold-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(253, 185, 19, 0.3);
+    }
+
+/* Tarjetas de características */
+.feature-icon-box {
+    width: 70px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 20px;
+    font-size: 2rem;
+    margin: 0 auto 1.5rem auto;
+    transition: transform 0.3s ease;
+}
+
+.hover-scale {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+    .hover-scale:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.05) !important;
+    }
+
+/* ==========================================================================
+   3. ANIMACIONES
+   ========================================================================== */
+
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-15px);
+    }
+
+    100% {
+        transform: translateY(0px);
     }
 }
 
-html,
-body {
-    height: 100%;
+.floating-element {
+    animation: float 6s ease-in-out infinite;
 }
 
-body {
-    margin: 0;
-    background-color: var(--utec-light-bg);
+.delay-1 {
+    animation-delay: 1.5s;
 }
 
-/* El contenedor principal de Tabler */
-.page {
+.delay-2 {
+    animation-delay: 3s;
+}
+
+/* Fade In Up */
+.animate-fade-in, .animate-on-scroll {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+    .animate-fade-in.visible, .animate-on-scroll.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+/* ==========================================================================
+   4. AJUSTES ESPECÍFICOS DE COMPONENTES (TABLER FIXES)
+   ========================================================================== */
+
+/* Navbar Active State con color UTEC */
+.navbar-dark .navbar-nav .nav-link.active,
+.navbar-dark .navbar-nav .show > .nav-link {
+    color: #fff;
+    background-color: rgba(255,255,255,0.1);
+    border-radius: 4px;
+}
+
+/* Cards del Dashboard más limpias */
+.card {
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    border: 1px solid rgba(101, 109, 119, 0.16);
+}
+
+/* Ajuste para SweetAlert2 para que coincida con el tema */
+div:where(.swal2-container) button:where(.swal2-styled).swal2-confirm {
+    background-color: var(--utec-primary) !important;
+}
+
+    div:where(.swal2-container) button:where(.swal2-styled).swal2-confirm:focus {
+        box-shadow: 0 0 0 3px rgba(105, 28, 50, 0.5) !important;
+    }
+
+
+/* =========================================
+   LOGIN / AUTH STYLES
+   ========================================= */
+
+/* Centrado vertical para la página de login (si no usas el layout de landing) */
+.page-center {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     min-height: 100vh;
 }
 
-/* Enlaces */
-a {
-    color: var(--utec-primary);
-    text-decoration: none;
+/* Degradado UTEC para el panel izquierdo */
+.bg-utec-gradient {
+    background: linear-gradient(135deg, var(--utec-primary) 0%, #2b0510 100%);
+    position: relative;
 }
 
-    a:hover {
-        color: var(--utec-primary-dark);
-        text-decoration: underline;
-    }
+/* Ajustes de la Card de Login */
+.card-md {
+    max-width: 900px; /* Hacemos la tarjeta más ancha para soportar dos columnas */
+    margin: 0 auto;
+}
 
-/* Botones primarios UTEC */
-.btn-primary {
-    color: #fff;
+/* Botón estilo píldora para login (más moderno) */
+.btn-pill {
+    border-radius: 50px;
+    padding-top: 0.6rem;
+    padding-bottom: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
     background-color: var(--utec-primary);
     border-color: var(--utec-primary);
 }
 
-    .btn-primary:hover,
-    .btn-primary:focus,
-    .btn-primary:active {
-        color: #fff;
+    .btn-pill:hover {
         background-color: var(--utec-primary-dark);
         border-color: var(--utec-primary-dark);
     }
 
-/* Botones outline UTEC */
-.btn-outline-primary {
-    color: var(--utec-primary);
-    border-color: var(--utec-primary);
-    background-color: transparent;
-}
-
-    .btn-outline-primary:hover,
-    .btn-outline-primary:focus,
-    .btn-outline-primary:active {
-        color: #fff;
-        background-color: var(--utec-primary);
-        border-color: var(--utec-primary);
-    }
-
-/* Badges y texto primario */
-.badge.bg-primary,
-.bg-primary {
-    background-color: var(--utec-primary) !important;
-}
-
-.text-primary {
+/* Iconos de input más elegantes */
+.input-icon-addon {
     color: var(--utec-primary) !important;
+    opacity: 0.7;
 }
-
-/* Cards un poco más suaves */
-.card {
-    border-radius: 0.75rem;
-}
-
-/* Page header de Tabler */
-.page-header .page-pretitle {
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    font-size: 0.75rem;
-    color: #6c757d;
-}
-
-.page-header .page-title {
-    font-weight: 600;
-}
-
-/* ========================= */
-/* Badges específicas        */
-/* ========================= */
-
-.badge {
-    font-size: 0.75rem;
-    padding: 0.35em 0.6em;
-    border-radius: 999px;
-}
-
-    /* Secundaria: "Disponible", etc. */
-    .badge.bg-secondary {
-        background-color: #6c757d !important;
-        color: #fff !important;
-    }
-
-    /* Éxito: "Completado", etc. */
-    .badge.bg-success {
-        background-color: #198754 !important;
-        color: #fff !important;
-    }
