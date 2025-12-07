@@ -59,3 +59,48 @@
         </form>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            var $form = $('form[data-confirm]');
+
+            $form.on('submit', function (e) {
+                var form = this;
+                var message = $(form).data('confirm') ||
+                    '¿Seguro que deseas realizar esta acción?';
+
+                if (form.dataset.swalSubmitted === 'true') {
+                    form.dataset.swalSubmitted = 'false';
+                    return;
+                }
+
+                e.preventDefault();
+
+                if (typeof Swal === 'undefined') {
+                    var ok = confirm(message);
+                    if (ok) {
+                        form.dataset.swalSubmitted = 'true';
+                        form.submit();
+                    }
+                    return;
+                }
+
+                Swal.fire({
+                    title: 'Confirmar eliminación',
+                    text: message,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar',
+                    reverseButtons: true
+                }).then(function (result) {
+                    if (result.isConfirmed) {
+                        form.dataset.swalSubmitted = 'true';
+                        form.submit();
+                    }
+                });
+            });
+        });
+    </script>
+}

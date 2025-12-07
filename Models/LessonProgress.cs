@@ -6,11 +6,11 @@ namespace SIGECES.Models
     {
         public int Id { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "La lección es obligatoria.")]
         public int LessonId { get; set; }
         public Lesson? Lesson { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "El estudiante es obligatorio.")]
         public int StudentId { get; set; }
         public User? Student { get; set; }
 

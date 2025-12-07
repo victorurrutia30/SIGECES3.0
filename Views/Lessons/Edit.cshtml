@@ -74,4 +74,57 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        $(function () {
+            var $form = $('form[asp-action="Edit"]');
+            if ($form.length === 0) {
+                $form = $('form'); // fallback por si cambia el tag helper
+            }
+
+            $form.on('submit', function (e) {
+                var form = this;
+
+                // Evitar loop cuando forzamos submit() manual
+                if (form.dataset.swalSubmitted === 'true') {
+                    form.dataset.swalSubmitted = 'false';
+                    return;
+                }
+
+                // Si hay validación cliente de jQuery, respetarla
+                if (typeof ($.validator) !== 'undefined' && !$form.valid()) {
+                    return;
+                }
+
+                e.preventDefault();
+
+                var title = $('#Title').val() || 'esta lección';
+
+                if (typeof Swal === 'undefined') {
+                    var ok = confirm('¿Guardar los cambios de "' + title + '"?');
+                    if (ok) {
+                        form.dataset.swalSubmitted = 'true';
+                        form.submit();
+                    }
+                    return;
+                }
+
+                Swal.fire({
+                    title: 'Guardar cambios',
+                    text: '¿Deseas guardar los cambios de "' + title + '"?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí, guardar',
+                    cancelButtonText: 'Cancelar',
+                    reverseButtons: true
+                }).then(function (result) {
+                    if (result.isConfirmed) {
+                        form.dataset.swalSubmitted = 'true';
+                        form.submit();
+                    }
+                });
+            });
+        });
+    </script>
 }
+

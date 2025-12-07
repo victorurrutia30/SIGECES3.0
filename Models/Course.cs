@@ -33,3 +33,4 @@ public class Course
     public ICollection<Lesson>? Lessons { get; set; }
     public ICollection<Enrollment>? Enrollments { get; set; }
 }
+

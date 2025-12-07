@@ -77,6 +77,46 @@ namespace SIGECES.Controllers
             if (!UserCanEditCourse(course))
                 return Forbid();
 
+            // ───── Validaciones manuales ─────
+            if (string.IsNullOrWhiteSpace(lesson.Title))
+            {
+                ModelState.AddModelError(nameof(lesson.Title), "El título es obligatorio.");
+            }
+
+            if (string.IsNullOrWhiteSpace(lesson.Description))
+            {
+                ModelState.AddModelError(nameof(lesson.Description), "La descripción es obligatoria.");
+            }
+
+            if (lesson.Order <= 0)
+            {
+                ModelState.AddModelError(nameof(lesson.Order), "El orden debe ser un número entero mayor que cero.");
+            }
+
+            if (!string.IsNullOrWhiteSpace(lesson.ResourceUrl))
+            {
+                if (!Uri.TryCreate(lesson.ResourceUrl, UriKind.Absolute, out var uriResult) ||
+                    (uriResult.Scheme != Uri.UriSchemeHttp && uriResult.Scheme != Uri.UriSchemeHttps))
+                {
+                    ModelState.AddModelError(nameof(lesson.ResourceUrl),
+                        "La URL del recurso no es válida. Debe empezar con http:// o https://");
+                }
+            }
+
+            // Unicidad de orden dentro del curso
+            if (!ModelState.ContainsKey(nameof(lesson.Order)) ||
+                ModelState[nameof(lesson.Order)].Errors.Count == 0)
+            {
+                bool orderExists = await _context.Lessons
+                    .AnyAsync(l => l.CourseId == lesson.CourseId && l.Order == lesson.Order);
+
+                if (orderExists)
+                {
+                    ModelState.AddModelError(nameof(lesson.Order),
+                        "Ya existe una lección con ese orden en este curso.");
+                }
+            }
+
             if (!ModelState.IsValid)
             {
                 ViewBag.CourseTitle = course.Title;
@@ -88,6 +128,7 @@ namespace SIGECES.Controllers
 
             return RedirectToAction(nameof(Manage), new { courseId = lesson.CourseId });
         }
+
 
         // GET: Lessons/Edit/5
         public async Task<IActionResult> Edit(int id)
@@ -123,6 +164,48 @@ namespace SIGECES.Controllers
             if (!UserCanEditCourse(course))
                 return Forbid();
 
+            // ───── Validaciones manuales ─────
+            if (string.IsNullOrWhiteSpace(lesson.Title))
+            {
+                ModelState.AddModelError(nameof(lesson.Title), "El título es obligatorio.");
+            }
+
+            if (string.IsNullOrWhiteSpace(lesson.Description))
+            {
+                ModelState.AddModelError(nameof(lesson.Description), "La descripción es obligatoria.");
+            }
+
+            if (lesson.Order <= 0)
+            {
+                ModelState.AddModelError(nameof(lesson.Order), "El orden debe ser un número entero mayor que cero.");
+            }
+
+            if (!string.IsNullOrWhiteSpace(lesson.ResourceUrl))
+            {
+                if (!Uri.TryCreate(lesson.ResourceUrl, UriKind.Absolute, out var uriResult) ||
+                    (uriResult.Scheme != Uri.UriSchemeHttp && uriResult.Scheme != Uri.UriSchemeHttps))
+                {
+                    ModelState.AddModelError(nameof(lesson.ResourceUrl),
+                        "La URL del recurso no es válida. Debe empezar con http:// o https://");
+                }
+            }
+
+            // Unicidad de orden dentro del curso (excluyendo esta lección)
+            if (!ModelState.ContainsKey(nameof(lesson.Order)) ||
+                ModelState[nameof(lesson.Order)].Errors.Count == 0)
+            {
+                bool orderExists = await _context.Lessons
+                    .AnyAsync(l => l.CourseId == lesson.CourseId
+                                   && l.Order == lesson.Order
+                                   && l.Id != lesson.Id);
+
+                if (orderExists)
+                {
+                    ModelState.AddModelError(nameof(lesson.Order),
+                        "Ya existe otra lección con ese orden en este curso.");
+                }
+            }
+
             if (!ModelState.IsValid)
             {
                 ViewBag.CourseTitle = course.Title;
@@ -146,6 +229,7 @@ namespace SIGECES.Controllers
 
             return RedirectToAction(nameof(Manage), new { courseId = lesson.CourseId });
         }
+
 
         // GET: Lessons/Delete/5
         public async Task<IActionResult> Delete(int id)

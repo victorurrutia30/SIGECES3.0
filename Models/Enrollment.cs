@@ -18,3 +18,4 @@ public class Enrollment
 
     public EnrollmentStatus Status { get; set; } = EnrollmentStatus.InProgress;
 }
+
