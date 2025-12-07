@@ -25,7 +25,7 @@
 
 <div class="card">
     <div class="card-body">
-        <form asp-action="Edit" method="post">
+        <form asp-action="Edit" method="post" class="js-category-edit-form">
             @Html.AntiForgeryToken()
             <input type="hidden" asp-for="Id" />
 
@@ -61,4 +61,56 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        $(function () {
+            var $form = $('.js-category-edit-form');
+            if ($form.length === 0) return;
+
+            $form.on('submit', function (e) {
+                var form = this;
+
+                if (form.dataset.swalSubmitted === 'true') {
+                    form.dataset.swalSubmitted = 'false';
+                    return;
+                }
+
+                var $f = $(form);
+
+                if ($f.valid && !$f.valid()) {
+                    // Hay errores de validación
+                    return;
+                }
+
+                e.preventDefault();
+
+                var name = $('#Name').val() || 'esta categoría';
+
+                if (typeof Swal === 'undefined') {
+                    var ok = confirm('¿Guardar cambios en la categoría "' + name + '"?');
+                    if (ok) {
+                        form.dataset.swalSubmitted = 'true';
+                        form.submit();
+                    }
+                    return;
+                }
+
+                Swal.fire({
+                    title: '¿Guardar cambios?',
+                    text: 'Se actualizará la categoría "' + name + '".',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí, guardar',
+                    cancelButtonText: 'Cancelar',
+                    reverseButtons: true
+                }).then(function (result) {
+                    if (result.isConfirmed) {
+                        form.dataset.swalSubmitted = 'true';
+                        form.submit();
+                    }
+                });
+            });
+        });
+    </script>
 }
+
