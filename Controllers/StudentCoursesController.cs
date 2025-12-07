@@ -155,11 +155,11 @@ namespace SIGECES.Controllers
                 _context.Enrollments.Add(enrollment);
                 await _context.SaveChangesAsync();
 
-                TempData["SuccessMessage"] = $"Listo, ya te inscribiste en el curso \"{decodedTitle}\".";
+                TempData["SuccessMessage"] = $"Listo, ya te inscribiste en el curso {decodedTitle}.";
             }
             else
             {
-                TempData["InfoMessage"] = $"Ya estabas inscrito en el curso \"{decodedTitle}\".";
+                TempData["InfoMessage"] = $"Ya estabas inscrito en el curso {decodedTitle}.";
             }
 
             return RedirectToAction(nameof(MyCourses));
