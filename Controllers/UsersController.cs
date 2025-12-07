@@ -51,6 +51,11 @@ namespace SIGECES.Controllers
                 ModelState.AddModelError("Password", "La contraseña es obligatoria para nuevos usuarios.");
             }
 
+            if (string.IsNullOrWhiteSpace(model.ConfirmPassword))
+            {
+                ModelState.AddModelError("ConfirmPassword", "Por favor confirma la contraseña.");
+            }
+
             if (!ModelState.IsValid)
             {
                 return View(model);
@@ -80,6 +85,7 @@ namespace SIGECES.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
 
         // GET: Users/Edit/5
         public async Task<IActionResult> Edit(int? id)
