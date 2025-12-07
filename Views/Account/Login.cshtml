@@ -49,8 +49,8 @@
 
                                                         <div class="mb-3">
                                                             <label asp-for="Email" class="form-label">Correo Institucional</label>
-                                                            <div class="input-icon mb-3">
-                                                                <span class="input-icon-addon">
+                                                            <div class="input-group mb-3">
+                                                                <span class="input-group-text">
                                                                     <i class="ti ti-mail"></i>
                                                                 </span>
                                                                 <input asp-for="Email" class="form-control" placeholder="nombre.apellido@mail.utec.edu.sv" autocomplete="email">
@@ -59,11 +59,20 @@
                                                         </div>
 
                                                         <div class="mb-2">
-                                                            <div class="input-icon mb-3">
-                                                                <span class="input-icon-addon">
+                                                            <label asp-for="Password" class="form-label">Contraseña</label>
+
+                                                            <div class="input-group mb-3">
+                                                                <span class="input-group-text">
                                                                     <i class="ti ti-lock"></i>
                                                                 </span>
-                                                                <input asp-for="Password" type="password" class="form-control" placeholder="••••••••" autocomplete="current-password">
+
+                                                                <input asp-for="Password" type="password" class="form-control" id="passwdInput" placeholder="••••••••" autocomplete="current-password">
+
+                                                                <span class="input-group-text">
+                                                                    <a href="#" class="link-secondary" title="Mostrar contraseña" onclick="togglePassword(event)" style="text-decoration: none;">
+                                                                        <i class="ti ti-eye" id="eyeIcon"></i>
+                                                                    </a>
+                                                                </span>
                                                             </div>
                                                             <span asp-validation-for="Password" class="text-danger small"></span>
                                                         </div>
@@ -88,8 +97,6 @@
                                         </div>
                                     </div>
 
-                                   
-
                                 </div>
                             </div>
                         </div>
@@ -102,4 +109,20 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        function togglePassword(e) {
+            e.preventDefault(); // Evita saltos de página
+            var input = document.getElementById('passwdInput');
+            var icon = document.getElementById('eyeIcon');
+
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.replace('ti-eye', 'ti-eye-off');
+            } else {
+                input.type = "password";
+                icon.classList.replace('ti-eye-off', 'ti-eye');
+            }
+        }
+    </script>
 }

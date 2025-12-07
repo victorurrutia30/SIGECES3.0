@@ -12,6 +12,22 @@
     int completed = completedLessonIds.Count;
     int percent = total == 0 ? 0 : (completed * 100 / total);
 
+    // --- LÓGICA DE SEMÁFORO ---
+    string progressClass = "bg-danger"; // Rojo si está muy bajo o en 0
+    if (percent >= 100)
+    {
+        progressClass = "bg-success"; // Verde al completar
+    }
+    else if (percent >= 50)
+    {
+        progressClass = "bg-warning"; // Amarillo/Naranja si va a la mitad o más
+    }
+    else if (percent > 0)
+    {
+        progressClass = "bg-primary"; // Azul si apenas empezó (pero no es cero)
+    }
+    // --------------------------
+
     string statusText = "No inscrito";
     string badgeClass = "bg-secondary-lt";
 
@@ -98,7 +114,7 @@
                     <hr />
                     <label class="form-label">Progreso del curso</label>
                     <div class="progress mb-1">
-                        <div class="progress-bar bg-success"
+                        <div class="progress-bar @progressClass"
                              role="progressbar"
                              style="width:@percent%"></div>
                     </div>
@@ -228,4 +244,3 @@
         });
     </script>
 }
-

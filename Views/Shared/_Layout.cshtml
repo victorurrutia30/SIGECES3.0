@@ -7,21 +7,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>@ViewData["Title"] - SIGECES</title>
 
-    <!-- Tabler core CSS (incluye Bootstrap 5) -->
     <link rel="stylesheet" href="https://unpkg.com/@@tabler/core@latest/dist/css/tabler.min.css" />
     <link rel="stylesheet" href="https://unpkg.com/@@tabler/core@latest/dist/css/tabler-flags.min.css" />
     <link rel="stylesheet" href="https://unpkg.com/@@tabler/core@latest/dist/css/tabler-payments.min.css" />
     <link rel="stylesheet" href="https://unpkg.com/@@tabler/core@latest/dist/css/tabler-vendors.min.css" />
 
-    <!-- Iconos Tabler como webfont -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@@tabler/icons-webfont@latest/tabler-icons.min.css" />
 
-    <!-- DataTables CSS -->
     <link rel="stylesheet"
           href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css" />
 
 
-    <!-- Estilos propios del sitio -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/SIGECES.styles.css" asp-append-version="true" />
 
@@ -32,9 +28,24 @@
         var isAuthenticated = User?.Identity?.IsAuthenticated == true;
         var userName = isAuthenticated ? (User.FindFirst(ClaimTypes.Name)?.Value ?? User.Identity!.Name) : null;
         var userRole = isAuthenticated ? User.FindFirst(ClaimTypes.Role)?.Value : null;
+
+        // --- LÓGICA DE INICIALES AGREGADA ---
+        var initials = "U";
+        if (!string.IsNullOrEmpty(userName))
+        {
+            var parts = userName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length > 0)
+            {
+                // Si tiene al menos 2 nombres, toma la primera letra de los dos primeros
+                // Si solo tiene uno, toma la primera letra de ese.
+                initials = parts.Length > 1
+                ? $"{parts[0][0]}{parts[1][0]}".ToUpper()
+                : $"{parts[0][0]}".ToUpper();
+            }
+        }
+        // ------------------------------------
     }
     <div class="page">
-        <!-- Sidebar vertical principal -->
         <aside class="navbar navbar-vertical navbar-expand-md navbar-dark">
             <div class="container-fluid">
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar-menu"
@@ -48,7 +59,6 @@
                     </a>
                 </h1>
 
-                <!-- Zona compacta (mobile) -->
                 <div class="navbar-nav flex-row d-md-none">
                     @if (isAuthenticated && !string.IsNullOrEmpty(userRole))
                     {
@@ -66,7 +76,6 @@
 
                 <div class="collapse navbar-collapse" id="sidebar-menu">
                     <ul class="navbar-nav pt-lg-3">
-                        <!-- Inicio: visible para todos -->
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">
                                 <span class="nav-link-icon d-md-none d-lg-inline-block">
@@ -155,9 +164,7 @@
             </div>
         </aside>
 
-        <!-- Contenido principal -->
         <div class="page-wrapper">
-            <!-- Barra superior (información de usuario) -->
             <header class="navbar navbar-expand-md d-none d-md-flex d-print-none">
                 <div class="container-xl">
                     <div class="navbar-nav flex-row order-md-last">
@@ -166,12 +173,13 @@
                             <div class="nav-item dropdown d-none d-md-flex">
                                 <a href="#" class="nav-link d-flex lh-1 text-reset p-0" data-bs-toggle="dropdown"
                                    aria-label="Open user menu">
-                                    <span class="avatar avatar-sm">
-                                        <i class="ti ti-user"></i>
+
+                                    <span class="avatar avatar-sm bg-blue-lt text-uppercase fw-bold">
+                                        @initials
                                     </span>
+
                                     <div class="d-none d-xl-block ps-2">
                                         <div>@userName</div>
-                                        
                                     </div>
                                 </a>
                                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
@@ -193,7 +201,6 @@
                 </div>
             </header>
 
-            <!-- Cuerpo de página -->
             <div class="page-body">
                 @if (ViewData["PageType"]?.ToString() == "Landing")
                 {
@@ -211,7 +218,6 @@
             <footer class="footer footer-transparent d-print-none">
                 <div class="container-xl">
                     <div class="row align-items-center py-3">
-                        <!-- Columna izquierda: info SIGECES / UTEC -->
                         <div class="col-12 col-md-7 text-center text-md-start mb-2 mb-md-0">
                             <div class="footer-brand">
                                 <strong>SIGECES</strong> · Sistema de gestión de cursos extracurriculares
@@ -225,13 +231,12 @@
                             </div>
                         </div>
 
-                        <!-- Columna derecha: redes sociales -->
                         <div class="col-12 col-md-5 text-center text-md-end">
                             <div class="footer-social-label small mb-1">
                                 Síguenos en redes
                             </div>
                             <div class="footer-social">
-                               
+
                                 <a href="https://www.facebook.com/universidadtecnologica" target="_blank" rel="noopener noreferrer" class="footer-social-link" title="Facebook UTEC">
                                     <i class="ti ti-brand-facebook"></i>
                                 </a>
@@ -253,22 +258,16 @@
         </div>
     </div>
 
-    <!-- jQuery global (para validación, DataTables, etc.) -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" crossorigin="anonymous"></script>
 
-    <!-- DataTables JS -->
     <script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
 
-    <!-- ApexCharts global (para dashboards) -->
     <script src="https://cdn.jsdelivr.net/npm/apexcharts@latest"></script>
 
-    <!-- JS core de Tabler -->
     <script src="https://unpkg.com/@@tabler/core@latest/dist/js/tabler.min.js" defer></script>
 
-    <!-- Scripts propios -->
     <script src="~/js/site.js" asp-append-version="true"></script>
 
-    <!-- Configuración global de DataTables -->
     <script src="~/js/datatable-defaults.js" asp-append-version="true"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
