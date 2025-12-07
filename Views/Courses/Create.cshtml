@@ -25,7 +25,7 @@
 
 <div class="card">
     <div class="card-body">
-        <form asp-action="Create" method="post">
+        <form asp-action="Create" method="post" class="js-course-create-form">
             @Html.AntiForgeryToken()
 
             <div class="mb-3">
@@ -83,4 +83,62 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        $(function () {
+            var $form = $('.js-course-create-form');
+
+            if ($form.length === 0) {
+                return;
+            }
+
+            $form.on('submit', function (e) {
+                var form = this;
+
+                // Evitar loop infinito cuando forzamos form.submit()
+                if (form.dataset.swalSubmitted === 'true') {
+                    form.dataset.swalSubmitted = 'false';
+                    return;
+                }
+
+                var $f = $(form);
+
+                // Si no está el plugin de validación, seguimos normal
+                if ($f.valid && !$f.valid()) {
+                    // Hay errores de validación → se muestran los mensajes en los <span asp-validation-for="">
+                    return;
+                }
+
+                e.preventDefault();
+
+                var title = $('#Title').val() || 'este curso';
+
+                // Fallback si no está SweetAlert2
+                if (typeof Swal === 'undefined') {
+                    var ok = confirm('¿Crear el curso "' + title + '"?');
+                    if (ok) {
+                        form.dataset.swalSubmitted = 'true';
+                        form.submit();
+                    }
+                    return;
+                }
+
+                Swal.fire({
+                    title: '¿Crear este curso?',
+                    text: 'Se creará el curso "' + title + '".',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí, crear',
+                    cancelButtonText: 'Cancelar',
+                    reverseButtons: true
+                }).then(function (result) {
+                    if (result.isConfirmed) {
+                        form.dataset.swalSubmitted = 'true';
+                        form.submit();
+                    }
+                });
+            });
+        });
+    </script>
 }
+
