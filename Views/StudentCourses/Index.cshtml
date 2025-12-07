@@ -244,19 +244,86 @@
                 return;
             }
 
-            var pageSize = 9;
+            var pageSize = 9; // 👈 número de cards por página
             var currentPage = 1;
 
+            // Marca inicial: todos "machan"
             $cards.each(function () {
                 $(this).data('match', true);
             });
 
             function renderPage() {
-                // ... TODO: aquí dejas tu código tal cual ya lo tenías ...
+                var $matched = $cards.filter(function () {
+                    return $(this).data('match') === true;
+                });
+
+                var total = $matched.length;
+
+                if (total === 0) {
+                    $cards.hide();
+                    $pager.hide();
+                    $emptyMsg.removeClass('d-none');
+                    $pageInfo.text('0 cursos encontrados');
+                    return;
+                }
+
+                $emptyMsg.addClass('d-none');
+
+                var totalPages = Math.ceil(total / pageSize);
+                if (currentPage > totalPages) {
+                    currentPage = totalPages;
+                }
+                if (currentPage < 1) {
+                    currentPage = 1;
+                }
+
+                // Ocultamos todas
+                $cards.hide();
+
+                var start = (currentPage - 1) * pageSize;
+                var end = start + pageSize;
+
+                $matched.each(function (index) {
+                    if (index >= start && index < end) {
+                        $(this).show();
+                    }
+                });
+
+                // Actualizar info de paginación
+                $pager.show();
+                $pageInfo.text(
+                    'Página ' + currentPage + ' de ' + totalPages + ' (' + total + ' cursos encontrados)'
+                );
+
+                $prev.closest('.page-item').toggleClass('disabled', currentPage === 1);
+                $next.closest('.page-item').toggleClass('disabled', currentPage === totalPages);
             }
 
             function aplicarFiltrosCatalogo() {
-                // ... aquí también dejas tu lógica existente ...
+                var term = ($search.val() || '').toLowerCase().trim();
+                var cat = ($category.val() || '').toLowerCase();
+                var inst = ($instructor.val() || '').toLowerCase();
+                var status = ($status.val() || '').toLowerCase();
+
+                $cards.each(function () {
+                    var $card = $(this);
+
+                    var cardCat = (($card.data('category') || '') + '').toLowerCase();
+                    var cardInst = (($card.data('instructor') || '') + '').toLowerCase();
+                    var cardStatus = (($card.data('status') || '') + '').toLowerCase();
+                    var text = $card.text().toLowerCase();
+
+                    var matchesTerm = !term || text.indexOf(term) !== -1;
+                    var matchesCat = !cat || cardCat === cat;
+                    var matchesInst = !inst || cardInst === inst;
+                    var matchesStatus = !status || cardStatus === status;
+
+                    var visible = matchesTerm && matchesCat && matchesInst && matchesStatus;
+                    $card.data('match', visible);
+                });
+
+                currentPage = 1;
+                renderPage();
             }
 
             // Eventos de filtros y paginación
@@ -288,50 +355,50 @@
                 renderPage();
             });
 
-                    // 👉 Confirmación al inscribirse con SweetAlert
-        $('.js-enroll-form').on('submit', function (e) {
-            var form = this;
+            // 👉 Confirmación al inscribirse con SweetAlert
+            $('.js-enroll-form').on('submit', function (e) {
+                var form = this;
 
-            // Evitar loop infinito al hacer form.submit() manualmente
-            if (form.dataset.swalSubmitted === 'true') {
-                form.dataset.swalSubmitted = 'false';
-                return; // dejamos que el submit siga normal
-            }
-
-            e.preventDefault();
-
-            var title = $(form).data('course-title') || 'este curso';
-
-            // Si no existe Swal, fallback al confirm nativo
-            if (typeof Swal === 'undefined') {
-                var ok = confirm('¿Seguro que quieres inscribirte en "' + title + '"?');
-                if (ok) {
-                    form.dataset.swalSubmitted = 'true';
-                    form.submit();
+                // Evitar loop infinito al hacer form.submit() manualmente
+                if (form.dataset.swalSubmitted === 'true') {
+                    form.dataset.swalSubmitted = 'false';
+                    return; // dejamos que el submit siga normal
                 }
-                return;
-            }
 
-            Swal.fire({
-                title: '¿Inscribirte en este curso?',
-                text: 'Te vas a inscribir en "' + title + '".',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Sí, inscribirme',
-                cancelButtonText: 'Cancelar',
-                reverseButtons: true
-            }).then(function (result) {
-                if (result.isConfirmed) {
-                    form.dataset.swalSubmitted = 'true';
-                    form.submit();
+                e.preventDefault();
+
+                var title = $(form).data('course-title') || 'este curso';
+
+                // Si no existe Swal, fallback al confirm nativo
+                if (typeof Swal === 'undefined') {
+                    var ok = confirm('¿Seguro que quieres inscribirte en "' + title + '"?');
+                    if (ok) {
+                        form.dataset.swalSubmitted = 'true';
+                        form.submit();
+                    }
+                    return;
                 }
+
+                Swal.fire({
+                    title: '¿Inscribirte en este curso?',
+                    text: 'Te vas a inscribir en "' + title + '".',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí, inscribirme',
+                    cancelButtonText: 'Cancelar',
+                    reverseButtons: true
+                }).then(function (result) {
+                    if (result.isConfirmed) {
+                        form.dataset.swalSubmitted = 'true';
+                        form.submit();
+                    }
+                });
             });
-        });
 
-
-            // Primera renderizada
+            // Primera renderizada (aplica filtros + pinta página 1)
             aplicarFiltrosCatalogo();
         });
     </script>
 }
+
 

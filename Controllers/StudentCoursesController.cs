@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SIGECES.Data;
 using SIGECES.Models;
+using System.Net;
 
 
 namespace SIGECES.Controllers
@@ -135,6 +136,9 @@ namespace SIGECES.Controllers
             if (course == null)
                 return NotFound();
 
+            // 🔹 Decodificar por si viene con entidades HTML (&quot;, &#xED;, etc.)
+            var decodedTitle = WebUtility.HtmlDecode(course.Title ?? string.Empty);
+
             var exists = await _context.Enrollments
                 .AnyAsync(e => e.CourseId == courseId && e.StudentId == studentId.Value);
 
@@ -151,11 +155,11 @@ namespace SIGECES.Controllers
                 _context.Enrollments.Add(enrollment);
                 await _context.SaveChangesAsync();
 
-                TempData["SuccessMessage"] = $"Listo, ya te inscribiste en el curso \"{course.Title}\".";
+                TempData["SuccessMessage"] = $"Listo, ya te inscribiste en el curso \"{decodedTitle}\".";
             }
             else
             {
-                TempData["InfoMessage"] = $"Ya estabas inscrito en el curso \"{course.Title}\".";
+                TempData["InfoMessage"] = $"Ya estabas inscrito en el curso \"{decodedTitle}\".";
             }
 
             return RedirectToAction(nameof(MyCourses));
