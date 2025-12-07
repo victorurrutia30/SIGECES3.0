@@ -42,14 +42,23 @@ namespace SIGECES.Controllers
                 return View(model);
 
             var user = await _context.Users
-                .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Email == model.Email && u.IsActive);
+    .AsNoTracking()
+    .FirstOrDefaultAsync(u => u.Email == model.Email && u.IsActive);
 
-            if (user == null || !PasswordHasher.VerifyPassword(model.Password, user.PasswordHash))
+            if (user == null)
             {
-                ModelState.AddModelError(string.Empty, "Correo o contraseña inválidos.");
+                // Error asociado al campo correo
+                ModelState.AddModelError(nameof(model.Email), "No se encontró un usuario con ese correo.");
                 return View(model);
             }
+
+            if (!PasswordHasher.VerifyPassword(model.Password, user.PasswordHash))
+            {
+                // Error asociado al campo contraseña
+                ModelState.AddModelError(nameof(model.Password), "Contraseña incorrecta.");
+                return View(model);
+            }
+
 
             var claims = new List<Claim>
             {
@@ -77,7 +86,6 @@ namespace SIGECES.Controllers
                 return Redirect(model.ReturnUrl);
             }
 
-            // Por ahora, todos van al Home. Luego podemos redirigir por rol.
             return RedirectToAction("Index", "Home");
         }
 

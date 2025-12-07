@@ -180,7 +180,10 @@
 
                                         @if (!isEnrolled)
                                         {
-                                            <form asp-action="Enroll" method="post" class="d-inline">
+                                            <form asp-action="Enroll"
+                                                  method="post"
+                                                  class="d-inline js-enroll-form"
+                                                  data-course-title="@course.Title">
                                                 @Html.AntiForgeryToken()
                                                 <input type="hidden" name="courseId" value="@course.Id" />
                                                 <button type="submit" class="btn btn-primary btn-sm">
@@ -189,6 +192,7 @@
                                                 </button>
                                             </form>
                                         }
+
                                     </div>
                                 </div>
                             </div>
@@ -240,87 +244,22 @@
                 return;
             }
 
-            var pageSize = 9; // 👈 cambia esto si quieres más/menos cards por página
+            var pageSize = 9;
             var currentPage = 1;
 
-            // Marca inicial: todos "machan"
             $cards.each(function () {
                 $(this).data('match', true);
             });
 
             function renderPage() {
-                var $matched = $cards.filter(function () {
-                    return $(this).data('match') === true;
-                });
-
-                var total = $matched.length;
-
-                if (total === 0) {
-                    $cards.hide();
-                    $pager.hide();
-                    $emptyMsg.removeClass('d-none');
-                    $pageInfo.text('0 cursos encontrados');
-                    return;
-                }
-
-                $emptyMsg.addClass('d-none');
-
-                var totalPages = Math.ceil(total / pageSize);
-                if (currentPage > totalPages) {
-                    currentPage = totalPages;
-                }
-                if (currentPage < 1) {
-                    currentPage = 1;
-                }
-
-                // Ocultamos todas
-                $cards.hide();
-
-                var start = (currentPage - 1) * pageSize;
-                var end = start + pageSize;
-
-                $matched.each(function (index) {
-                    if (index >= start && index < end) {
-                        $(this).show();
-                    }
-                });
-
-                // Actualizar info de paginación
-                $pager.show();
-                $pageInfo.text('Página ' + currentPage + ' de ' + totalPages + ' (' + total + ' cursos encontrados)');
-
-                $prev.closest('.page-item').toggleClass('disabled', currentPage === 1);
-                $next.closest('.page-item').toggleClass('disabled', currentPage === totalPages);
+                // ... TODO: aquí dejas tu código tal cual ya lo tenías ...
             }
 
             function aplicarFiltrosCatalogo() {
-                var term = ($search.val() || '').toLowerCase().trim();
-                var cat = ($category.val() || '').toLowerCase();
-                var inst = ($instructor.val() || '').toLowerCase();
-                var status = ($status.val() || '').toLowerCase();
-
-                $cards.each(function () {
-                    var $card = $(this);
-
-                    var cardCat = (($card.data('category') || '') + '').toLowerCase();
-                    var cardInst = (($card.data('instructor') || '') + '').toLowerCase();
-                    var cardStatus = (($card.data('status') || '') + '').toLowerCase();
-                    var text = $card.text().toLowerCase();
-
-                    var matchesTerm = !term || text.indexOf(term) !== -1;
-                    var matchesCat = !cat || cardCat === cat;
-                    var matchesInst = !inst || cardInst === inst;
-                    var matchesStatus = !status || cardStatus === status;
-
-                    var visible = matchesTerm && matchesCat && matchesInst && matchesStatus;
-                    $card.data('match', visible);
-                });
-
-                currentPage = 1;
-                renderPage();
+                // ... aquí también dejas tu lógica existente ...
             }
 
-            // Eventos
+            // Eventos de filtros y paginación
             $search.on('input', function () {
                 aplicarFiltrosCatalogo();
             });
@@ -349,8 +288,19 @@
                 renderPage();
             });
 
-            // Primera renderizada (con posible búsqueda inicial desde servidor)
+            // 👉 Confirmación al inscribirse
+            $('.js-enroll-form').on('submit', function (e) {
+                var title = $(this).data('course-title') || 'este curso';
+                var ok = confirm('¿Seguro que quieres inscribirte en "' + title + '"?');
+
+                if (!ok) {
+                    e.preventDefault();
+                }
+            });
+
+            // Primera renderizada
             aplicarFiltrosCatalogo();
         });
     </script>
 }
+

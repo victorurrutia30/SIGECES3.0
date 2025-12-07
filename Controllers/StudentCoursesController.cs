@@ -109,11 +109,13 @@ namespace SIGECES.Controllers
                 return Unauthorized();
 
             var enrollments = await _context.Enrollments
-                .Include(e => e.Course)!.ThenInclude(c => c.Category)
-                .Include(e => e.Course)!.ThenInclude(c => c.Instructor)
-                .Where(e => e.StudentId == studentId.Value)
-                .OrderBy(e => e.EnrolledAt)
-                .ToListAsync();
+        .Include(e => e.Course)!.ThenInclude(c => c.Category)
+        .Include(e => e.Course)!.ThenInclude(c => c.Instructor)
+        .Where(e => e.StudentId == studentId.Value
+                    && e.Course != null
+                    && e.Course.IsActive)  
+        .OrderBy(e => e.EnrolledAt)
+        .ToListAsync();
 
             return View(enrollments);
         }
@@ -148,10 +150,17 @@ namespace SIGECES.Controllers
 
                 _context.Enrollments.Add(enrollment);
                 await _context.SaveChangesAsync();
+
+                TempData["SuccessMessage"] = $"Listo, ya te inscribiste en el curso \"{course.Title}\".";
+            }
+            else
+            {
+                TempData["InfoMessage"] = $"Ya estabas inscrito en el curso \"{course.Title}\".";
             }
 
             return RedirectToAction(nameof(MyCourses));
         }
+
 
         private int? GetCurrentUserId()
         {

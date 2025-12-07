@@ -269,7 +269,7 @@ namespace SIGECES.Controllers
 
             if (student == null)
             {
-                TempData["ErrorMessage"] = "No se encontró un estudiante activo con ese correo.";
+                TempData["ErrorMessage"] = "No fue posible encontrar un usuario activo con ese correo.";
                 return RedirectToAction(nameof(Students), new { id = courseId });
             }
 
@@ -277,7 +277,7 @@ namespace SIGECES.Controllers
                                   course.Enrollments.Any(e => e.StudentId == student.Id);
             if (alreadyEnrolled)
             {
-                TempData["ErrorMessage"] = "El estudiante ya está inscrito en este curso.";
+                TempData["ErrorMessage"] = "Este estudiante ya se encuentra inscrito en este curso.";
                 return RedirectToAction(nameof(Students), new { id = courseId });
             }
 
@@ -297,7 +297,7 @@ namespace SIGECES.Controllers
         }
 
         // Cambiar estado de una inscripción (InProgress / Completed)
-        // Cambiar estado de una inscripción (InProgress / Completed)
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateEnrollmentStatus(int enrollmentId, EnrollmentStatus status)
