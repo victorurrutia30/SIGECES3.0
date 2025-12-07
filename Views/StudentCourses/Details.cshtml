@@ -44,11 +44,18 @@
             </div>
         </div>
         <div class="col-auto ms-auto d-print-none">
-            <a asp-action="MyCourses" class="btn btn-outline-secondary">
-                <i class="ti ti-arrow-left me-1"></i>
-                Volver al mis cursos
-            </a>
+            <div class="btn-group">
+                <a asp-action="Index" class="btn btn-outline-primary">
+                    <i class="ti ti-book me-1"></i>
+                    Volver al catálogo
+                </a>
+                <a asp-action="MyCourses" class="btn btn-outline-secondary">
+                    <i class="ti ti-bookmarks me-1"></i>
+                    Mis cursos
+                </a>
+            </div>
         </div>
+
     </div>
 </div>
 
@@ -183,13 +190,42 @@
     <script>
         $(function () {
             $('.js-enroll-form').on('submit', function (e) {
-                var title = $(this).data('course-title') || 'este curso';
-                var ok = confirm('¿Seguro que quieres inscribirte en "' + title + '"?');
+                var form = this;
 
-                if (!ok) {
-                    e.preventDefault();
+                if (form.dataset.swalSubmitted === 'true') {
+                    form.dataset.swalSubmitted = 'false';
+                    return;
                 }
+
+                e.preventDefault();
+
+                var title = $(form).data('course-title') || 'este curso';
+
+                if (typeof Swal === 'undefined') {
+                    var ok = confirm('¿Seguro que quieres inscribirte en "' + title + '"?');
+                    if (ok) {
+                        form.dataset.swalSubmitted = 'true';
+                        form.submit();
+                    }
+                    return;
+                }
+
+                Swal.fire({
+                    title: '¿Inscribirte en este curso?',
+                    text: 'Te vas a inscribir en "' + title + '".',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí, inscribirme',
+                    cancelButtonText: 'Cancelar',
+                    reverseButtons: true
+                }).then(function (result) {
+                    if (result.isConfirmed) {
+                        form.dataset.swalSubmitted = 'true';
+                        form.submit();
+                    }
+                });
             });
         });
     </script>
 }
+

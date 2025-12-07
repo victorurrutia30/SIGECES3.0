@@ -288,15 +288,46 @@
                 renderPage();
             });
 
-            // 👉 Confirmación al inscribirse
-            $('.js-enroll-form').on('submit', function (e) {
-                var title = $(this).data('course-title') || 'este curso';
-                var ok = confirm('¿Seguro que quieres inscribirte en "' + title + '"?');
+                    // 👉 Confirmación al inscribirse con SweetAlert
+        $('.js-enroll-form').on('submit', function (e) {
+            var form = this;
 
-                if (!ok) {
-                    e.preventDefault();
+            // Evitar loop infinito al hacer form.submit() manualmente
+            if (form.dataset.swalSubmitted === 'true') {
+                form.dataset.swalSubmitted = 'false';
+                return; // dejamos que el submit siga normal
+            }
+
+            e.preventDefault();
+
+            var title = $(form).data('course-title') || 'este curso';
+
+            // Si no existe Swal, fallback al confirm nativo
+            if (typeof Swal === 'undefined') {
+                var ok = confirm('¿Seguro que quieres inscribirte en "' + title + '"?');
+                if (ok) {
+                    form.dataset.swalSubmitted = 'true';
+                    form.submit();
+                }
+                return;
+            }
+
+            Swal.fire({
+                title: '¿Inscribirte en este curso?',
+                text: 'Te vas a inscribir en "' + title + '".',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, inscribirme',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true
+            }).then(function (result) {
+                if (result.isConfirmed) {
+                    form.dataset.swalSubmitted = 'true';
+                    form.submit();
                 }
             });
+        });
+
 
             // Primera renderizada
             aplicarFiltrosCatalogo();
